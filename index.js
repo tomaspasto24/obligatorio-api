@@ -3,24 +3,59 @@ const express = require("express"),
     app = express(),
     puerto = 3000;
 
-app.get('/', (peticion, respuesta) => {
-    // Podemos acceder a la petición HTTP
-    let agenteDeUsuario = peticion.header("user-agent");
-    respuesta.send("La ruta / solicitada con: " + agenteDeUsuario);
-});
-app.get('/pagina', (peticion, respuesta) => {
-    // Servir archivo HTML, o cualquier otro archivo
-    let rutaDeArchivo = path.join(__dirname, "plantilla.html");
-    respuesta.sendFile(rutaDeArchivo);
+app.post('/iniciar-sesion', (peticion, respuesta) => {
+    
 });
 
-app.get('/hola', (peticion, respuesta) => {
-    let mascota = {
-        nombre: "Maggie",
-        edad: 2,
-    };
-    respuesta.json(mascota);
+app.post('/registrar-usuario', (peticion, respuesta) => {
+    
 });
+
+app.get('/habilidades', (peticion, respuesta) => {
+    
+});
+
+app.get('/habilidades-categorias', (peticion, respuesta) => {
+    
+});
+
+app.get('/solicitudes', (peticion, respuesta) => {
+    
+});
+
+app.get('/solicitudes-relevantes', (peticion, respuesta) => {
+    
+});
+
+app.get('/solicitudes-activas', (peticion, respuesta) => {
+    
+});
+
+app.post('/aceptar-solicitud', (peticion, respuesta) => {
+    
+});
+
+app.post('/solicitud', (peticion, respuesta) => { //crear-solicitud
+    
+});
+
+app.get('/solicitud-chat', (peticion, respuesta) => { 
+    
+});
+
+app.post('/solicitud-chat-mensaje', (peticion, respuesta) => { 
+    
+});
+
+app.post('/finalizar-solicitud', (peticion, respuesta) => { 
+    
+});
+
+app.post('/solicitud-chat-mensaje', (peticion, respuesta) => { 
+    
+});
+
+
 
 // Una vez definidas nuestras rutas podemos iniciar el servidor
 app.listen(puerto, err => {
