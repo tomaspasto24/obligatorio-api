@@ -2,7 +2,7 @@ const pool = require('../db/connection');
 
 async function getUsers() {
     try {
-        const query = 'SELECT * FROM Usuario';
+        const query = 'SELECT * FROM public."Usuario"';
         const result = await pool.query(query);
         return result.rows;
     } catch (error) {
