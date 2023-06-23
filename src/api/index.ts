@@ -4,6 +4,8 @@ import { UsuariosService } from '../data-pg/services/usuarios-service';
 import app from './server';
 import dotenv from 'dotenv';
 
+dotenv.config();
+
 let testFilter: UsuarioFiltro = new UsuarioFiltro();
 testFilter.email = 'asd@asd.com';
 testFilter.fullName = 'asd';
@@ -14,7 +16,6 @@ let service: IUsuariosService = new UsuariosService();
 console.log(service.getUsuariosFiltered(testFilter));
 
 /*
-dotenv.config();
 
 const hostname = process.env.HOSTNAME || 'localhost';
 const port = Number(process.env.PORT || 3000);
