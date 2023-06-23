@@ -7,12 +7,18 @@ export class Database implements IDatabase {
     private static _instance: Database;
 
     private constructor() {
+        const dbUser: string = process.env.DB_USER || '';
+        const dbHost: string = process.env.DB_HOST || '';
+        const dbDatabase: string = process.env.DB_DATABASE || '';
+        const dbPassword: string = process.env.DB_PASSWORD || '';
+        const dbPort: number = Number(process.env.DB_PORT) || 5432;
+
         this._pool = new Pool({
-            user: 'postgres',
-            host: '174.138.127.85',
-            database: 'bd-obligatorio',
-            password: 'e3nz4i6gcmjz2j3y',
-            port: 42299, // or your PostgreSQL port
+            user: dbUser,
+            host: dbHost,
+            database: dbDatabase,
+            password: dbPassword,
+            port: dbPort,
         });
     }
 

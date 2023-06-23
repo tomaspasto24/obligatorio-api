@@ -1,18 +1,14 @@
 
 import express from 'express';
-import dotenv from 'dotenv';
 import cors from 'cors';
 import router from './routes';
 import cookieParser from 'cookie-parser';
 
-dotenv.config();
-
-const hostname = process.env.HOSTNAME || 'localhost';
-const port = process.env.PORT || 3000;
+const corsOrigin = process.env.API_CORS_ORIGIN || 'http://localhost:4200';
 
 const app = express();
 const corsOptions = {
-    origin: process.env.CORS_ORIGIN,
+    origin: corsOrigin,
     optionsSuccessStatus: 200,
     methods: "GET,PUT,POST,DELETE",
 }
