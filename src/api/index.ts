@@ -8,26 +8,9 @@ import { DBServiceFactory } from '../data-pg/patterns/factory/db-service-factory
 
 dotenv.config();
 
-let testFilter: UsuarioFiltro = new UsuarioFiltro();
-testFilter.email = 'asd@asd.com';
-testFilter.fullName = 'asd';
-testFilter.nick = 'asd';
-testFilter.skills = [1, 2, 3];
-
-let service: IUsuariosService = new UsuariosService();
-console.log(service.getUsuariosFiltered(testFilter));
-
-
-let factory: IDBServiceFactory = DBServiceFactory.instance;
-console.log(factory);
-
-
-/*
-
-const hostname = process.env.HOSTNAME || 'localhost';
-const port = Number(process.env.PORT || 3000);
+const hostname = process.env.API_HOSTNAME || 'localhost';
+const port = Number(process.env.API_PORT || 3000);
 
 app.listen(port, hostname, () => {
     console.log(`Server running at http://${hostname}:${port}/`);
 });
-*/

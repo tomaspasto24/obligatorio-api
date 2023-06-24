@@ -4,8 +4,17 @@ import { IJWTTokenPayload } from "../../core/types/ijwt-token-payload";
 
 export class AuthenticationMiddleware {
     static readonly authenticate = async (req: Request, res: Response, next: NextFunction) => {
-        if (req.baseUrl === '/login')
+        const reqUrl: string = req.originalUrl;
+        const filteredUrls: string[] = [
+            '/api/iniciar-sesion',
+            '/api/registrar-usuario',
+            '/api/habilidades',
+            '/api/habilidades-categorias',
+        ];
+
+        if (filteredUrls.includes(reqUrl)) {
             next();
+        }
 
         try {
             const accessJWT: string = req.headers.authorization ?? '';

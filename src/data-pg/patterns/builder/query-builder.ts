@@ -8,7 +8,7 @@ import { Order } from "../../../core/types/order.enum";
 export class PGSelectQuery extends SelectQuery {
     constructor(table: new (...args: any) => IModelEntity, predicateParser: PredicateParser, cols?: string[]) {
         let tableName = TableDefinitionFactory.getTableName(table);
-        let tableAllCols = TableDefinitionFactory.getTableCols(table).filter(col => cols? cols.includes(col) : true).map(col => `${tableName}.${col} AS ${tableName}_${col}`);
+        let tableAllCols = TableDefinitionFactory.getTableCols(table).filter(col => cols? cols.includes(col) : true).map(col => `"${tableName}".${col} AS ${tableName}_${col}`);
         super(tableName, predicateParser, tableAllCols);
     }
 
@@ -61,7 +61,7 @@ export class PGSelectQuery extends SelectQuery {
 
     public join<T extends IModelEntity>(table: new (...args: any) => T, alias: string, condition: Expression, cols?: string[], ): SelectQuery {
         let tableName = TableDefinitionFactory.getTableName(table);
-        let tableAllCols = TableDefinitionFactory.getTableCols(table).filter(col => cols?.includes(col)).map(col => `${alias}.${col} AS ${alias}_${col}`);
+        let tableAllCols = TableDefinitionFactory.getTableCols(table).filter(col => cols?.includes(col)).map(col => `"${alias}".${col} AS ${alias}_${col}`);
         this._tables.push([tableName, tableAllCols? tableAllCols : [], alias, condition]);
         return this;
     }
@@ -226,7 +226,7 @@ export function cons(value: any): Expression {
 }
 
 export function prop(alias: string, name: string, format?: string): Expression {
-    return new PropertyExpression(`${alias}.${name}`, format);
+    return new PropertyExpression(`"${alias}".${name}`, format);
 }
 
 export class PGQueryBuilder implements IQueryBuilder {
