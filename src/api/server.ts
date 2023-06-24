@@ -1,7 +1,7 @@
 
 import express from 'express';
 import cors from 'cors';
-import router from './routes';
+import { openRouter, closedRouter } from './routes';
 import cookieParser from 'cookie-parser';
 import { AuthenticationMiddleware } from './middlewares/authentication-middleware';
 
@@ -18,7 +18,7 @@ app.use(express.json());
 app.use(express.urlencoded({extended: true}));
 app.use(cors(corsOptions));
 app.use(cookieParser());
-app.use(AuthenticationMiddleware.authenticate);
-app.use('/api', router)
+app.use('/api', openRouter);
+app.use('/api', closedRouter);
 
 export default app;

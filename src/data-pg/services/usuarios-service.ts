@@ -56,7 +56,9 @@ export class UsuariosService implements IUsuariosService {
         query = query.group([['Usuario', ['id', 'email', 'nick', 'name', 'lastName', 'birthDate']]]);
         console.log(query.build());
 
-        //let result = await this._database.query(query.build());
+        let result = await this._database.query(query.build());
+
+        console.log(result.rows);
 
         let usuarios: UsuarioDTO[] = [];
         return usuarios;
@@ -74,12 +76,12 @@ export class UsuariosService implements IUsuariosService {
         query = query.where(and(equal(prop('Usuario', 'email'), cons(email)), equal(prop('Usuario', 'contraseña'), cons(passwordHash))));
         let response = await this._database.query(query.build());
         let usuario: UsuarioDTO = new UsuarioDTO();
-        usuario.id = response.rows[0].id;
-        usuario.email = response.rows[0].email;
-        usuario.nick = response.rows[0].nick;
-        usuario.name = response.rows[0].nombres;
-        usuario.lastName = response.rows[0].apellidos;
-        usuario.birthDate = new Date(response.rows[0].nacimiento);
+        usuario.id = response.rows[0].usuario_id;
+        usuario.email = response.rows[0].usuario_email;
+        usuario.nick = response.rows[0].usuario_nick;
+        usuario.name = response.rows[0].usuario_nombres;
+        usuario.lastName = response.rows[0].usuario_apellidos;
+        usuario.birthDate = new Date(response.rows[0].usuario_nacimiento);
         return usuario;
     }
 
@@ -88,10 +90,11 @@ export class UsuariosService implements IUsuariosService {
     }
 
     public async updUsuarioPerfil(id: number, data: PerfilModificacionDTO): Promise<any> {
+        throw new Error("Method not implemented.");
         const query = this._queryBuilder.select(Usuario, ['id', 'email', 'nick', 'name', 'lastName', 'birthDate']);
         const usuario: UsuarioDTO = new UsuarioDTO();
-        const res = this._queryBuilder.update(Usuario, ['id', 'email', 'nick', 'name', 'lastName', 'birthDate'], data);
-        return res;
+        //const res = this._queryBuilder.update(Usuario, ['id', 'email', 'nick', 'name', 'lastName', 'birthDate'], data);
+        //return res;
     }
 
     public async updUsuarioAddHabilidad(data: UsuarioHabilidadAccionDTO): Promise<any> {

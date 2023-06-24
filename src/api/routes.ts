@@ -1,57 +1,58 @@
 import express, { Router } from 'express';
+import { AuthenticationController } from './controllers/authentication-controller';
+import { AuthenticationMiddleware } from './middlewares/authentication-middleware';
 
-const router: Router = express.Router();
+export const closedRouter: Router = express.Router();
+export const openRouter: Router = express.Router();
 
-router.post('/iniciar-sesion', (req: any, res: any) => {
+closedRouter.use(AuthenticationMiddleware.authenticate);
+
+openRouter.post('/iniciar-sesion', AuthenticationController.login);
+
+openRouter.post('/registrar-usuario', (req: any, res: any) => {
     
 });
 
-router.post('/registrar-usuario', (req: any, res: any) => {
+openRouter.get('/habilidades', (req: any, res: any) => {
+    //let habilidades: Habilidad[] = [];
+});
+
+openRouter.get('/habilidades-categorias', (req: any, res: any) => {
     
 });
 
-router.get('/habilidades', (req: any, res: any) => {
-    let habilidades: Habilidad[] = [];
-});
-
-router.get('/habilidades-categorias', (req: any, res: any) => {
+openRouter.get('/solicitudes', (req: any, res: any) => {
     
 });
 
-router.get('/solicitudes', (req: any, res: any) => {
+closedRouter.get('/solicitudes-relevantes', (req: any, res: any) => {
     
 });
 
-router.get('/solicitudes-relevantes', (req: any, res: any) => {
+closedRouter.get('/solicitudes-activas', (req: any, res: any) => {
     
 });
 
-router.get('/solicitudes-activas', (req: any, res: any) => {
+closedRouter.post('/aceptar-solicitud', (req: any, res: any) => {
     
 });
 
-router.post('/aceptar-solicitud', (req: any, res: any) => {
+closedRouter.post('/solicitud', (req: any, res: any) => { //crear-solicitud
     
 });
 
-router.post('/solicitud', (req: any, res: any) => { //crear-solicitud
+closedRouter.get('/solicitud-chat', (req: any, res: any) => { 
     
 });
 
-router.get('/solicitud-chat', (req: any, res: any) => { 
+closedRouter.post('/solicitud-chat-mensaje', (req: any, res: any) => { 
     
 });
 
-router.post('/solicitud-chat-mensaje', (req: any, res: any) => { 
+closedRouter.post('/finalizar-solicitud', (req: any, res: any) => { 
     
 });
 
-router.post('/finalizar-solicitud', (req: any, res: any) => { 
+closedRouter.post('/solicitud-chat-mensaje', (req: any, res: any) => { 
     
 });
-
-router.post('/solicitud-chat-mensaje', (req: any, res: any) => { 
-    
-});
-
-export default router;
