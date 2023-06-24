@@ -1,8 +1,10 @@
+import { IDBServiceFactory } from '../core/patterns/factory/idb-service-factory';
 import { UsuarioFiltro } from '../core/dtos/usuario-filtro';
 import { IUsuariosService } from '../core/services/iusuarios-service';
 import { UsuariosService } from '../data-pg/services/usuarios-service';
 import app from './server';
 import dotenv from 'dotenv';
+import { DBServiceFactory } from '../data-pg/patterns/factory/db-service-factory';
 
 dotenv.config();
 
@@ -14,6 +16,11 @@ testFilter.skills = [1, 2, 3];
 
 let service: IUsuariosService = new UsuariosService();
 console.log(service.getUsuariosFiltered(testFilter));
+
+
+let factory: IDBServiceFactory = DBServiceFactory.instance;
+console.log(factory);
+
 
 /*
 

@@ -6,10 +6,12 @@ import { UsuarioFiltro as UsuarioFiltroDTO} from "../dtos/usuario-filtro";
 import { UsuarioHabilidadAccion as UsuarioHabilidadAccionDTO } from "../dtos/usuario-habilidad-accion";
 import { Conexion as ConexionDTO } from "../dtos/conexion";
 import { ConexionAccion as ConexionAccionDTO } from "../dtos/conexion-accion";
+import { IDBService } from "./idb-service";
 
-export interface IUsuariosService {
+export interface IUsuariosService extends IDBService {
     getUsuariosFiltered(filter: UsuarioFiltroDTO): Promise<UsuarioDTO[]>;
     getUsuarioById(id: number): Promise<UsuarioDTO>;
+    getUsuarioByLogin(email: string, password: string): Promise<UsuarioDTO>;
     getUsuarioHabilidades(id: number): Promise<HabilidadDTO>;
     updUsuarioPerfil(id: number, data: PerfilModificacionDTO): Promise<any>;
     updUsuarioAddHabilidad(data: UsuarioHabilidadAccionDTO): Promise<any>;

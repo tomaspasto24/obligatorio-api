@@ -66,6 +66,20 @@ export class UsuariosService implements IUsuariosService {
         throw new Error("Method not implemented.");
     }
 
+    public async getUsuarioByLogin(email: string, passwordHash: string): Promise<UsuarioDTO> {
+        let query = this._queryBuilder.select(Usuario, ['id', 'email', 'nick', 'nombres', 'apellidos', 'nacimiento', 'contraseña']);
+        query = query.where(and(equal(prop('Usuario', 'email'), cons(email)), equal(prop('Usuario', 'contraseña'), cons(passwordHash))));
+        let response = await this._database.query(query.build());
+        let usuario: UsuarioDTO = new UsuarioDTO();
+        usuario.id = response.rows[0].id;
+        usuario.email = response.rows[0].email;
+        usuario.nick = response.rows[0].nick;
+        usuario.name = response.rows[0].nombres;
+        usuario.lastName = response.rows[0].apellidos;
+        usuario.birthDate = new Date(response.rows[0].nacimiento);
+        return usuario;
+    }
+
     public async getUsuarioHabilidades(id: number): Promise<HabilidadDTO> {
         throw new Error("Method not implemented.");
     }

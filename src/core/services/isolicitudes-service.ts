@@ -5,8 +5,9 @@ import { SolicitudCreacion as SolicitudCreacionDTO } from "../dtos/solicitud-cre
 import { SolicitudAceptacion as SolicitudAceptacionDTO } from "../dtos/solicitud-aceptacion";
 import { SolicitudFinalizacion as SolicitudFinalizacionDTO } from "../dtos/solicitud-finalizacion";
 import { Chat as ChatDTO } from "../dtos/chat";
+import { IDBService } from "./idb-service";
 
-export interface ISolicitudesService {
+export interface ISolicitudesService extends IDBService {
     getSolicitudesRelevantes(): Promise<SolicitudRelevanteDTO[]>;
     getSolicitudesActivas(id: number): Promise<SolicitudActivaDTO[]>;
     getSolicitud(id: number) : Promise<SolicitudDTO>;
