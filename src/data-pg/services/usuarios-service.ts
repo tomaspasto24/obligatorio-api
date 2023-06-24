@@ -63,7 +63,10 @@ export class UsuariosService implements IUsuariosService {
     }
 
     public async getUsuarioById(id: number): Promise<UsuarioDTO> {
-        throw new Error("Method not implemented.");
+        const query = this._queryBuilder.select(Usuario, ['id', 'email', 'nick', 'name', 'lastName', 'birthDate']).where(equal(prop('Usuario', 'id'), cons(id)));
+        const usuario: UsuarioDTO = new UsuarioDTO();
+
+        return usuario;
     }
 
     public async getUsuarioHabilidades(id: number): Promise<HabilidadDTO> {
@@ -71,7 +74,10 @@ export class UsuariosService implements IUsuariosService {
     }
 
     public async updUsuarioPerfil(id: number, data: PerfilModificacionDTO): Promise<any> {
-        throw new Error("Method not implemented.");
+        const query = this._queryBuilder.select(Usuario, ['id', 'email', 'nick', 'name', 'lastName', 'birthDate']);
+        const usuario: UsuarioDTO = new UsuarioDTO();
+        const res = this._queryBuilder.update(Usuario, ['id', 'email', 'nick', 'name', 'lastName', 'birthDate'], data);
+        return res;
     }
 
     public async updUsuarioAddHabilidad(data: UsuarioHabilidadAccionDTO): Promise<any> {

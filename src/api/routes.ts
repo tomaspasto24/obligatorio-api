@@ -2,55 +2,55 @@ import express, { Router } from 'express';
 
 const router: Router = express.Router();
 
-router.post('/iniciar-sesion', (req, res) => {
+router.post('/iniciar-sesion', (req: any, res: any) => {
     
 });
 
-router.post('/registrar-usuario', (req, res) => {
+router.post('/registrar-usuario', (req: any, res: any) => {
     
 });
 
-router.get('/habilidades', (req, res) => {
+router.get('/habilidades', (req: any, res: any) => {
+    let habilidades: Habilidad[] = [];
+});
+
+router.get('/habilidades-categorias', (req: any, res: any) => {
     
 });
 
-router.get('/habilidades-categorias', (req, res) => {
+router.get('/solicitudes', (req: any, res: any) => {
     
 });
 
-router.get('/solicitudes', (req, res) => {
+router.get('/solicitudes-relevantes', (req: any, res: any) => {
     
 });
 
-router.get('/solicitudes-relevantes', (req, res) => {
+router.get('/solicitudes-activas', (req: any, res: any) => {
     
 });
 
-router.get('/solicitudes-activas', (req, res) => {
+router.post('/aceptar-solicitud', (req: any, res: any) => {
     
 });
 
-router.post('/aceptar-solicitud', (req, res) => {
+router.post('/solicitud', (req: any, res: any) => { //crear-solicitud
     
 });
 
-router.post('/solicitud', (req, res) => { //crear-solicitud
+router.get('/solicitud-chat', (req: any, res: any) => { 
     
 });
 
-router.get('/solicitud-chat', (req, res) => { 
+router.post('/solicitud-chat-mensaje', (req: any, res: any) => { 
     
 });
 
-router.post('/solicitud-chat-mensaje', (req, res) => { 
+router.post('/finalizar-solicitud', (req: any, res: any) => { 
     
 });
 
-router.post('/finalizar-solicitud', (req, res) => { 
-    
-});
-
-router.post('/solicitud-chat-mensaje', (req, res) => { 
+router.post('/solicitud-chat-mensaje', (req: any, res: any) => { 
     
 });
 
