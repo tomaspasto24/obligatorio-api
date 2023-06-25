@@ -14,6 +14,9 @@ export class CodeCache {
     }
 
     public static getInstance(): CodeCache {
+        if (!CodeCache._instance) {
+            CodeCache._instance = new CodeCache();
+        }
         return CodeCache._instance;
     }
 
