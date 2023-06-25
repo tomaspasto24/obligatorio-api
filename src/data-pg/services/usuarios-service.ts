@@ -5,7 +5,7 @@ import { PerfilModificacion as PerfilModificacionDTO } from "../../core/dtos/per
 import { Usuario as UsuarioDTO } from "../../core/dtos/usuario";
 import { UsuarioFiltro as UsuarioFiltroDTO } from "../../core/dtos/usuario-filtro";
 import { UsuarioHabilidadAccion as UsuarioHabilidadAccionDTO } from "../../core/dtos/usuario-habilidad-accion";
-import { IQueryBuilder } from "../../core/patterns/builder/query-builder";
+import { IQueryBuilder, InsertQuery, Query } from "../../core/patterns/builder/query-builder";
 import { IUsuariosService } from "../../core/services/iusuarios-service";
 import { Database } from "../database/database";
 import { PGQueryBuilder, and, cons, equal, in_, like, or, prop } from "../patterns/builder/query-builder";
@@ -29,7 +29,7 @@ export class UsuariosService implements IUsuariosService {
 
     public async getUsuariosFiltered(filter: UsuarioFiltroDTO): Promise<UsuarioDTO[]> {
         // Preparar consulta
-        let query = this._queryBuilder.select(Usuario, ['id', 'email', 'nick', 'nombres', 'apellidos', 'nacimiento']);
+        let query = this._queryBuilder.select(Usuario, ['id', 'email', 'nick', 'nombres', 'apellidos']);
         let stack: Expression[] = [];
         if (filter.email) stack.push(
             like(
@@ -46,9 +46,9 @@ export class UsuariosService implements IUsuariosService {
                 prop('Usuario', 'nick'), 
                 cons(`%${filter.nick}%`)
                 ));
-        if (filter.skills) stack.push(
+        if (filter.skills?.length > 0) stack.push(
             in_(
-                prop('H', 'codigo'), 
+                prop('H', 'id_habilidad'), 
                 cons(filter.skills)
                 ));
         let where: Expression | null = stack.length > 0 ? stack.pop()! : null;
@@ -57,7 +57,7 @@ export class UsuariosService implements IUsuariosService {
         }
         query = query.join(UsuarioHabilidades, 'H', equal(prop('Usuario', 'id'), prop('H', 'id_usuario')));
         query = where ? query.where(where) : query;
-        query = query.group([['Usuario', ['id', 'email', 'nick', 'nombres', 'apellidos', 'nacimiento']]]);
+        query = query.group([['Usuario', ['id', 'email', 'nick', 'nombres', 'apellidos']]]);
 
         // Ejecutar consulta
         let result = await this._database.query(query.build());
@@ -74,7 +74,6 @@ export class UsuariosService implements IUsuariosService {
             usuario.nick = result.rows[i].usuario_nick;
             usuario.name = result.rows[i].usuario_nombres;
             usuario.lastName = result.rows[i].usuario_apellidos;
-            usuario.birthDate = new Date(result.rows[i].usuario_nacimiento);
             usuarios.push(usuario);
         }
 
@@ -84,7 +83,7 @@ export class UsuariosService implements IUsuariosService {
 
     public async getUsuarioById(id: number): Promise<UsuarioDTO> {
         // Preparar consulta
-        let query = this._queryBuilder.select(Usuario, ['id', 'email', 'nick', 'nombres', 'apellidos', 'nacimiento']);
+        let query = this._queryBuilder.select(Usuario, ['id', 'email', 'nick', 'nombres', 'apellidos']);
         query = query.where(equal(prop('Usuario', 'id'), cons(id)));
 
         // Ejecutar consulta
@@ -110,22 +109,29 @@ export class UsuariosService implements IUsuariosService {
     }
 
     public async insUsuario(data: RegistroDTO): Promise<any> {
-        /*
-        // Preparar consulta
-        let query = this._queryBuilder.insert(Usuario, ['email', 'nick', 'nombres', 'apellidos', 'nacimiento', 'contraseña'], [cons(data.email), cons(data.nick), cons(data.name), cons(data.lastName), cons(data.birthDate), cons(data.passwordHash)]);
+        // Preparar consultas
+        let queries: Query[] = [];
+        let queryA: InsertQuery = this._queryBuilder.insert(Usuario, ['email', 'nick', 'nombres', 'apellidos', 'contraseña', 'eliminado', "fecha_registro"])
+        queryA = queryA.values([data.email, data.nick, data.name, data.lastName, data.password, false, new Date()]);
+        queryA = queryA.returning("id", "usuario_insertado");
+        queries.push(queryA);
+        for (let i = 0; i < data.skills.length; i++) {
+            let queryB: InsertQuery = this._queryBuilder.insert(UsuarioHabilidades, ['id_usuario', 'id_habilidad']);
+            queryB = queryB.from("usuario_insertado", [prop("usuario_insertado", "id"), cons(data.skills[i])]);
+            queries.push(queryB);
+        }
 
-        // Ejecutar consulta
-        let response = await this._database.query(query.build());
+        // Ejecutar consultas
+        let response = await this._database.transaction(queries);
 
         // Verificar respuesta
         if (response.rowCount == 0)
             throw new Error("No se pudo crear el usuario");
-            */
     }
 
     public async getUsuarioByLogin(email: string, passwordHash: string): Promise<UsuarioDTO> {
         // Preparar consulta
-        let query = this._queryBuilder.select(Usuario, ['id', 'email', 'nick', 'nombres', 'apellidos', 'nacimiento', 'contraseña']);
+        let query = this._queryBuilder.select(Usuario, ['id', 'email', 'nick', 'nombres', 'apellidos', 'contraseña']);
         query = query.where(and(equal(prop('Usuario', 'email'), cons(email)), equal(prop('Usuario', 'contraseña'), cons(passwordHash))));
 
         // Ejecutar consulta
@@ -181,10 +187,16 @@ export class UsuariosService implements IUsuariosService {
 
     public async updUsuarioPerfil(id: number, data: PerfilModificacionDTO): Promise<any> {
         throw new Error("Method not implemented.");
-        const query = this._queryBuilder.select(Usuario, ['id', 'email', 'nick', 'name', 'lastName', 'birthDate']);
-        const usuario: UsuarioDTO = new UsuarioDTO();
-        //const res = this._queryBuilder.update(Usuario, ['id', 'email', 'nick', 'name', 'lastName', 'birthDate'], data);
-        //return res;
+
+        // Preparar consulta
+
+        // Ejecutar consulta
+
+        // Verificar respuesta
+
+        // Convertir respuesta a DTO
+
+        // Retornar DTO
     }
 
     public async updUsuarioAddHabilidad(data: UsuarioHabilidadAccionDTO): Promise<any> {

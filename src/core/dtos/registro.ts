@@ -6,7 +6,6 @@ export class Registro {
     public nick: string;
     public name: string;
     public lastName: string;
-    public birthDate: Date;
     public skills: number[];
 
     constructor() {
@@ -15,7 +14,6 @@ export class Registro {
         this.nick = '';
         this.name = '';
         this.lastName = '';
-        this.birthDate = new Date();
         this.skills = [];
     }
 
