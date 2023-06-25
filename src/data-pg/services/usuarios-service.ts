@@ -13,10 +13,12 @@ import { Usuario } from "../../core/models/usuario";
 import { Expression } from "../../core/patterns/visitor/expression-visitor";
 import { UsuarioHabilidades } from "../../core/models/usuario-habilidades";
 import { Conexion as ConexionDTO } from "../../core/dtos/conexion";
-import { ConexionAccion } from "../../core/dtos/conexion-accion";
+import { ConexionAccion as ConexionAccionDTO } from "../../core/dtos/conexion-accion";
 import { Habilidad } from "../../core/models/habilidad";
 import { Categoria } from "../../core/models/categoria";
 import { Registro as RegistroDTO } from "../../core/dtos/registro";
+import { UsuarioConectadoUsuario } from "../../core/models/usuario-conectado-usuario";
+import { intersection, union } from "lodash";
 
 export class UsuariosService implements IUsuariosService {
     private _database: IDatabase;
@@ -27,7 +29,7 @@ export class UsuariosService implements IUsuariosService {
         this._queryBuilder = new PGQueryBuilder();
     }
 
-    public async getUsuariosFiltered(filter: UsuarioFiltroDTO): Promise<UsuarioDTO[]> {
+    public async getUsuariosFiltered(activeUserId: number, filter: UsuarioFiltroDTO, count: number): Promise<UsuarioDTO[]> {
         // Preparar consulta
         let query = this._queryBuilder.select(Usuario, ['id', 'email', 'nick', 'nombres', 'apellidos']);
         let stack: Expression[] = [];
@@ -76,6 +78,11 @@ export class UsuariosService implements IUsuariosService {
             usuario.lastName = result.rows[i].usuario_apellidos;
             usuarios.push(usuario);
         }
+
+        // Ordenar usuarios por coeficiente
+        usuarios = usuarios.filter(u => u.id != activeUserId);
+        usuarios = await this.sortUsuariosByCoefficient(activeUserId, usuarios);
+        usuarios = usuarios.slice(0, count);
 
         // Retornar DTO
         return usuarios;
@@ -186,118 +193,183 @@ export class UsuariosService implements IUsuariosService {
     }
 
     public async updUsuarioPerfil(id: number, data: PerfilModificacionDTO): Promise<any> {
-        throw new Error("Method not implemented.");
-
         // Preparar consulta
+        let query = this._queryBuilder.update(Usuario, ['email', 'nick', 'nombres', 'apellidos'], [data.email, data.nick, data.name, data.lastName]);
+        query = query.where(equal(prop('Usuario', 'id'), cons(id)));
 
         // Ejecutar consulta
+        let response = await this._database.query(query.build());
 
         // Verificar respuesta
-
-        // Convertir respuesta a DTO
-
-        // Retornar DTO
+        if (response.rowCount == 0)
+            throw new Error("No se pudo actualizar el usuario");
     }
 
     public async updUsuarioAddHabilidad(data: UsuarioHabilidadAccionDTO): Promise<any> {
-        throw new Error("Method not implemented.");
-
         // Preparar consulta
+        let query = this._queryBuilder.insert(UsuarioHabilidades, ['id_usuario', 'id_habilidad']);
+        query = query.values([data.userId, data.skillId]);
 
         // Ejecutar consulta
+        let response = await this._database.query(query.build());
 
         // Verificar respuesta
-
-        // Convertir respuesta a DTO
-
-        // Retornar DTO
+        if (response.rowCount == 0)
+            throw new Error("No se pudo agregar la habilidad");
     }
 
     public async updUsuarioRemoveHabilidad(data: UsuarioHabilidadAccionDTO): Promise<any> {
-        throw new Error("Method not implemented.");
-    }
-
-    public async updUsuarioChangePassAuth(id: number): Promise<any> {
-        throw new Error("Method not implemented.");
-
         // Preparar consulta
+        let query = this._queryBuilder.delete(UsuarioHabilidades);
+        query = query.where(and(equal(prop('UsuarioHabilidades', 'id_usuario'), cons(data.userId)), equal(prop('UsuarioHabilidades', 'id_habilidad'), cons(data.skillId))));
 
         // Ejecutar consulta
+        let response = await this._database.query(query.build());
 
         // Verificar respuesta
-
-        // Convertir respuesta a DTO
-
-        // Retornar DTO
+        if (response.rowCount == 0)
+            throw new Error("No se pudo eliminar la habilidad");
     }
 
     public async updUsuarioChangePass(data: PasswordCambioRealizacionDTO): Promise<any> {
-        throw new Error("Method not implemented.");
-
         // Preparar consulta
+        let query = this._queryBuilder.update(Usuario, ['contraseña'], [data.password]);
+        query = query.where(equal(prop('Usuario', 'id'), cons(data.userId)));
 
         // Ejecutar consulta
+        let response = await this._database.query(query.build());
 
         // Verificar respuesta
-
-        // Convertir respuesta a DTO
-
-        // Retornar DTO
+        if (response.rowCount == 0)
+            throw new Error("No se pudo cambiar la contraseña");
     }
 
     public async getUsuarioConexiones(id: number): Promise<ConexionDTO[]> {
-        throw new Error("Method not implemented.");
-
         // Preparar consulta
+        let query = this._queryBuilder.select(UsuarioConectadoUsuario, ['id_usuario1', 'id_usuario2', 'aceptada']);
+        query = query.join(Usuario, 'U1', equal(prop('UsuarioConectadoUsuario', 'id_usuario1'), prop('U1', 'id')), ['email', 'nick', 'nombres', 'apellidos']);
+        query = query.join(Usuario, 'U2', equal(prop('UsuarioConectadoUsuario', 'id_usuario2'), prop('U2', 'id')), ['email', 'nick', 'nombres', 'apellidos']);
+        query.where(or(equal(prop('UsuarioConectadoUsuario', 'id_usuario1'), cons(id)), equal(prop('UsuarioConectadoUsuario', 'id_usuario2'), cons(id))));
 
         // Ejecutar consulta
+        let response = await this._database.query(query.build());
 
         // Verificar respuesta
+        // Cuando no se encuentran conexiones, se retorna un arreglo vacío
 
         // Convertir respuesta a DTO
+        let conexiones: ConexionDTO[] = [];
+        for (let i = 0; i < response.rowCount; i++) {
+            let conexion: ConexionDTO = new ConexionDTO();
+            conexion.userId = response.rows[i].usuarioconectadousuario_id_usuario1 == id ? response.rows[i].usuarioconectadousuario_id_usuario2 : response.rows[i].usuarioconectadousuario_id_usuario1;
+            conexion.email = response.rows[i].usuarioconectadousuario_id_usuario1 == id ? response.rows[i].u2_email : response.rows[i].u1_email;
+            conexion.nick = response.rows[i].usuarioconectadousuario_id_usuario1 == id ? response.rows[i].u2_nick : response.rows[i].u1_nick;
+            conexion.name = response.rows[i].usuarioconectadousuario_id_usuario1 == id ? response.rows[i].u2_nombres : response.rows[i].u1_nombres;
+            conexion.lastName = response.rows[i].usuarioconectadousuario_id_usuario1 == id ? response.rows[i].u2_apellidos : response.rows[i].u1_apellidos;
+            conexion.accepted = response.rows[i].aceptada;
+            conexiones.push(conexion);
+        }
 
         // Retornar DTO
+        return conexiones;
     }
 
-    public async insUsuarioConexion(data: ConexionAccion): Promise<any> {
-        throw new Error("Method not implemented.");
-
+    public async insUsuarioConexion(data: ConexionAccionDTO): Promise<any> {
         // Preparar consulta
+        let query = this._queryBuilder.insert(UsuarioConectadoUsuario, ['id_usuario1', 'id_usuario2', 'aceptada']);
+        query = query.values([Math.min(data.activeUserId, data.passiveUserId), Math.max(data.activeUserId, data.passiveUserId), false]);
 
         // Ejecutar consulta
+        let response = await this._database.query(query.build());
 
         // Verificar respuesta
-
-        // Convertir respuesta a DTO
-
-        // Retornar DTO
+        if (response.rowCount == 0)
+            throw new Error("No se pudo agregar la conexión");
     }
 
     public async updUsuarioConexionAceptar(id: number, connection_id: number): Promise<any> {
-        throw new Error("Method not implemented.");
-
         // Preparar consulta
+        let query = this._queryBuilder.update(UsuarioConectadoUsuario, ['aceptada'], [true]);
+        let where: Expression[] = [];
+        where.push(and(equal(prop('UsuarioConectadoUsuario', 'id_usuario1'), cons(connection_id)), equal(prop('UsuarioConectadoUsuario', 'id_usuario2'), cons(id))));
+        where.push(and(equal(prop('UsuarioConectadoUsuario', 'id_usuario1'), cons(id)), equal(prop('UsuarioConectadoUsuario', 'id_usuario2'), cons(connection_id))));
+        query = query.where(or(where[0], where[1]));
 
         // Ejecutar consulta
+        let response = await this._database.query(query.build());
 
         // Verificar respuesta
-
-        // Convertir respuesta a DTO
-
-        // Retornar DTO
+        if (response.rowCount == 0)
+            throw new Error("No se pudo aceptar la conexión");
     }
 
     public async dltUsuarioConexion(id: number, connection_id: number): Promise<any> {
-        throw new Error("Method not implemented.");
-
         // Preparar consulta
+        let query = this._queryBuilder.delete(UsuarioConectadoUsuario);
+        let where: Expression[] = [];
+        where.push(and(equal(prop('UsuarioConectadoUsuario', 'id_usuario1'), cons(connection_id)), equal(prop('UsuarioConectadoUsuario', 'id_usuario2'), cons(id))));
+        where.push(and(equal(prop('UsuarioConectadoUsuario', 'id_usuario1'), cons(id)), equal(prop('UsuarioConectadoUsuario', 'id_usuario2'), cons(connection_id))));
+        query = query.where(or(where[0], where[1]));
 
         // Ejecutar consulta
+        let response = await this._database.query(query.build());
 
         // Verificar respuesta
+        if (response.rowCount == 0)
+            throw new Error("No se pudo eliminar la conexión");
+    }
 
-        // Convertir respuesta a DTO
+    private async sortUsuariosByCoefficient(currentUserId: number, users: UsuarioDTO[]): Promise<UsuarioDTO[]> {
+        // Preparar consulta
+        let query = this._queryBuilder.select(UsuarioConectadoUsuario, ['id_usuario1', 'id_usuario2']);
 
-        // Retornar DTO
+        // Ejecutar consulta
+        let response = await this._database.query(query.build());
+
+        // Verificar respuesta
+        if (response.rowCount == 0)
+            return users;
+
+        // Calcular coeficiente de cada usuario
+        const connections: Map<number, number[]> = new Map<number, number[]>();
+        for (let i = 0; i < response.rowCount; i++) {
+            const user1 = response.rows[i].usuarioconectadousuario_id_usuario1;
+            const user2 = response.rows[i].usuarioconectadousuario_id_usuario2;
+
+            if (!connections.has(user1))
+                connections.set(user1, []);
+            if (!connections.has(user2))
+                connections.set(user2, []);
+
+            connections.get(user1)!.push(user2);
+            connections.get(user2)!.push(user1);
+        }
+
+        // Filtrar conexiones del usuario actual
+        const currentConnections: number[] = connections.get(currentUserId) || [];
+        const filteredUsers: UsuarioDTO[] = users.filter(user => !currentConnections.includes(user.id));
+
+        const orderedUsers: IOrderedUsers[] = filteredUsers.map(user => { return { user: user, coefficient: 0 } });
+        for (const user of orderedUsers) {
+            const user1Connections: number[] = connections.get(currentUserId) || [];
+            const user2Connections: number[] = connections.get(user.user.id) || [];
+
+            const commonConnections: number[] = intersection(user1Connections, user2Connections);
+            const totalConnections: number[] = union(user1Connections, user2Connections);
+
+            const coefficient: number = commonConnections.length / totalConnections.length;
+            user.coefficient = coefficient;
+        }
+
+        // Ordenar usuarios por coeficiente
+        orderedUsers.sort((a, b) => b.coefficient - a.coefficient);
+
+        // Retornar usuarios ordenados
+        return orderedUsers.map(user => user.user);
+
+        interface IOrderedUsers {
+            coefficient: number;
+            user: UsuarioDTO;
+        }
     }
 }

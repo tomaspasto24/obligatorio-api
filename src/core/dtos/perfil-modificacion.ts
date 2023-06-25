@@ -5,14 +5,12 @@ export class PerfilModificacion {
     public nick: string;
     public name: string;
     public lastName: string;
-    public birthDate: Date;
 
     constructor() {
         this.email = '';
         this.nick = '';
         this.name = '';
         this.lastName = '';
-        this.birthDate = new Date();
     }
 
     public set(property: string, value: any): PerfilModificacion {
