@@ -19,7 +19,7 @@ openRouter.post('/registrar-usuario', AuthenticationController.register);
 
 
 // Endpoints de manejo de usuarios
-closedRouter.post('/usuarios', UsuariosController.insUsuario);
+openRouter.post('/usuarios', UsuariosController.insUsuario);
 closedRouter.post('/usuarios/search', UsuariosController.insUsuariosSearch);
 closedRouter.get('/usuarios/:id', UsuariosController.getUsuarioById);
 closedRouter.get('/usuarios/:id/habilidades', UsuariosController.getUsuarioHabilidades);

@@ -1,3 +1,4 @@
+import { Query } from "../../core/patterns/builder/query-builder";
 import { IDatabase } from "../../core/database/idatabase";
 import { Pool } from "pg";
 
@@ -34,5 +35,18 @@ export class Database implements IDatabase {
                 else resolve(res);
             });
         });
+    }
+
+    public transaction(queries: Query[]): Promise<any> {
+        let query = '';
+        query += 'WITH';
+        for (let i = 0; i < queries.length; i++) {
+            query += ` "${queries[i].queryId}" AS (${queries[i].build()}), `;
+        }
+        query = query.slice(0, -2);
+        query += ' ';
+        
+        query += 'SELECT 0;';
+        return this.query(query);
     }
 }

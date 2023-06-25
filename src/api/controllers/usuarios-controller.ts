@@ -19,7 +19,7 @@ import { CryptoHelper } from "../../core/helpers/crypto-helper";
 export class UsuariosController {
     static readonly insUsuariosSearch = async (req: any, res: any) => {
         try {
-            const filter: UsuarioFiltroDTO = UsuarioFiltroDTO.fromJson(req.body);
+            const filter: UsuarioFiltroDTO = UsuarioFiltroDTO.fromJson((req.body as IRequestWrapper).body);
 
             let usuariosService: IUsuariosService = DBServiceFactory.instance.getUsuariosService();
             const usuarios: UsuarioDTO[] = await usuariosService.getUsuariosFiltered(filter);
