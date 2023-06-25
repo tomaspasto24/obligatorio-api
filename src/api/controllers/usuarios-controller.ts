@@ -19,10 +19,14 @@ import { CryptoHelper } from "../../core/helpers/crypto-helper";
 export class UsuariosController {
     static readonly insUsuariosSearch = async (req: any, res: any) => {
         try {
-            const filter: UsuarioFiltroDTO = UsuarioFiltroDTO.fromJson((req.body as IRequestWrapper).body);
+            const activeUser = req.body.userId;
+            const body: UsuarioFiltroDTO = UsuarioFiltroDTO.fromJson((req.body as IRequestWrapper).body);
+
+            if (activeUser < 1)
+                return res.status(401).json({ message: 'Unauthorized' });
 
             let usuariosService: IUsuariosService = DBServiceFactory.instance.getUsuariosService();
-            const usuarios: UsuarioDTO[] = await usuariosService.getUsuariosFiltered(filter);
+            const usuarios: UsuarioDTO[] = await usuariosService.getUsuariosFiltered(activeUser, body, 20);
 
             return res.status(200).json(usuarios);
         }
@@ -278,6 +282,8 @@ export class UsuariosController {
 
             if (!valid)
                 return res.status(401).json({ message: 'Unauthorized' });
+
+            body.password = CryptoHelper.hash(password);
 
             let usuariosService: IUsuariosService = DBServiceFactory.instance.getUsuariosService();
             await usuariosService.updUsuarioChangePass(body);
