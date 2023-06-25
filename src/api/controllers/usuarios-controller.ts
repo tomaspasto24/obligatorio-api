@@ -249,6 +249,7 @@ export class UsuariosController {
             const code = codeCache.generateCode({ userId: userId });
 
             // TODO: Send email with code
+            console.log(code);
 
             return res.status(200).json({ message: 'Solicitud de cambio de contraseña enviada' });
         }
@@ -262,7 +263,7 @@ export class UsuariosController {
             const userId = Number(req.params.id);
             const activeUser = req.body.userId;
             const body: PasswordCambioRealizacionDTO = PasswordCambioRealizacionDTO.fromJson((req.body as IRequestWrapper).body);
-            const code = body.authCode;
+            const code = Number(body.authCode);
             const password = body.password;
             const targetUserId = body.userId;
 
@@ -274,7 +275,7 @@ export class UsuariosController {
                 return res.status(400).json({ message: 'Invalid request' });
             if (!code || !password)
                 return res.status(400).json({ message: 'Invalid request' });
-            if (code.length !== 6)
+            if (code < 100000 || code > 999999)
                 return res.status(400).json({ message: 'Invalid request' });
 
             let codeCache: CodeCache = CodeCache.getInstance();
