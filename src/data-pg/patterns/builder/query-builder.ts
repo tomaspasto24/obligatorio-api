@@ -16,7 +16,7 @@ export class PGSelectQuery extends SelectQuery {
         let query = `SELECT ${this._tables.filter(table => table[1].length > 0).map(table => table[1].join(', ')).join(', ')} FROM "${this._tables[0][2]}"`;
         if (this._tables.length > 1) {
             for (let i = 1; i < this._tables.length; i++) {
-                query += ` INNER JOIN "${this._tables[i][0]}" AS ${this._tables[i][2]} ON ${this._predicateParser.parse(this._tables[i][3]!)}`;
+                query += ` INNER JOIN "${this._tables[i][0]}" AS "${this._tables[i][2]}" ON ${this._predicateParser.parse(this._tables[i][3]!)}`;
             }
         }
         query += this._where;
