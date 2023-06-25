@@ -1,4 +1,4 @@
-import { Habilidad } from "../../core/dtos/habilidad";
+import { Habilidad as HabilidadDTO } from "../../core/dtos/habilidad";
 import { HabilidadesCategoria } from "../../core/dtos/habilidades-categoria";
 import { IHabilidadesService } from "../../core/services/ihabilidades-service";
 import { IQueryBuilder } from "../../core/patterns/builder/query-builder";
@@ -6,6 +6,7 @@ import { IDatabase } from "../../core/database/idatabase";
 import { Database } from "../database/database";
 import { PGQueryBuilder, and, cons, equal, in_, like, or, prop } from "../patterns/builder/query-builder";
 import { Categoria } from "../../core/models/categoria";
+import { Habilidad } from "../../core/models/habilidad";
 
 
 export class HabilidadesService implements IHabilidadesService {
@@ -18,7 +19,7 @@ export class HabilidadesService implements IHabilidadesService {
         this._queryBuilder = new PGQueryBuilder();
     }
 
-    public async getHabilidades(): Promise<Habilidad[]> {
+    public async getHabilidades(): Promise<HabilidadDTO[]> {
         //Se prepara la consulta
         let query = this._queryBuilder.select(Habilidad, ['codigo', 'habilidad', 'descripcion', 'codigo_categoria']);
         query.join(Categoria, 'C', equal(prop('Habilidad', 'codigo_categoria'), prop('C', 'codigo')), ['nombre']);
@@ -27,13 +28,13 @@ export class HabilidadesService implements IHabilidadesService {
         let result = await this._database.query(query.build());
 
         //Se convierte la respuesta a Habilidad
-        let habilidades: Habilidad[] = [];
+        let habilidades: HabilidadDTO[] = [];
         for (let i = 0; i < result.rowCount; i++) {
-            let habilidad: Habilidad = new Habilidad();
-            habilidad.id = result.rows[i].codigo;
-            habilidad.name = result.rows[i].habilidad;
-            habilidad.description = result.rows[i].descripcion;
-            habilidad.categoryId = result.rows[i].codigo_categoria;
+            let habilidad: HabilidadDTO = new HabilidadDTO();
+            habilidad.id = result.rows[i].habilidad_codigo;
+            habilidad.name = result.rows[i].habilidad_habilidad;
+            habilidad.description = result.rows[i].habilidad_descripcion;
+            habilidad.categoryId = result.rows[i].habilidad_codigo_categoria;
             habilidad.categoryName = result.rows[i].c_nombre
             habilidades.push(habilidad);
         }
@@ -53,8 +54,8 @@ export class HabilidadesService implements IHabilidadesService {
         let categorias: HabilidadesCategoria[] = [];
         for (let i = 0; i < result.rowCount; i++) {
             let categoria: HabilidadesCategoria = new HabilidadesCategoria();
-            categoria.id = result.rows[i].codigo;
-            categoria.name = result.rows[i].nombre;
+            categoria.id = result.rows[i].categoria_codigo;
+            categoria.name = result.rows[i].categoria_nombre;
             categorias.push(categoria);
         }
 
