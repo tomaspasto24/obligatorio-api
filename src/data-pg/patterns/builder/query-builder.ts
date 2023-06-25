@@ -2,7 +2,7 @@ import { FormatHelper } from "../../../core/helpers/format-helper";
 import { IModelEntity } from "../../../core/models/ientity-model";
 import { DeleteQuery, IQueryBuilder, InsertQuery, PredicateParser, SelectQuery, UpdateQuery } from "../../../core/patterns/builder/query-builder";
 import { TableDefinitionFactory } from "../../../core/patterns/factory/table-definition-factory";
-import { BinaryExpression, ConstantExpression, Expression, PropertyExpression, UnaryExpression } from "../../../core/patterns/visitor/expression-visitor";
+import { BinaryExpression, ConstantExpression, DataExpression, Expression, PropertyExpression, UnaryExpression } from "../../../core/patterns/visitor/expression-visitor";
 import { Order } from "../../../core/types/order.enum";
 
 export class PGSelectQuery extends SelectQuery {
@@ -16,7 +16,7 @@ export class PGSelectQuery extends SelectQuery {
         let query = `SELECT ${this._tables.filter(table => table[1].length > 0).map(table => table[1].join(', ')).join(', ')} FROM "${this._tables[0][2]}"`;
         if (this._tables.length > 1) {
             for (let i = 1; i < this._tables.length; i++) {
-                query += ` INNER JOIN "${this._tables[i][0]}" AS "${this._tables[i][2]}" ON ${this._predicateParser.parse(this._tables[i][3]!)}`;
+                query += ` LEFT JOIN "${this._tables[i][0]}" AS "${this._tables[i][2]}" ON ${this._predicateParser.parse(this._tables[i][3]!)}`;
             }
         }
         query += this._where;
@@ -55,7 +55,11 @@ export class PGSelectQuery extends SelectQuery {
     }
 
     public group(group: [string, string[]][]): SelectQuery {
-        this._group = ` GROUP BY ${group.map(col => `${col[0]}(${col[1].join(', ')})`).join(', ')}`;
+        this._group = ` GROUP BY ${group.map(col => {
+            const tableAlias: string = col[0];
+            const cols: string[] = col[1];
+            return cols.map(col => `${tableAlias}_${col}`).join(', ');
+        }).join(', ')}`;
         return this;
     }
 
@@ -77,7 +81,7 @@ export class PGUpdateQuery extends UpdateQuery {
     }
     
     public build(): string {
-        return `UPDATE ${this._table} SET ${this._cols.map((col, i) => `${col} = ${this._predicateParser.parse(cons(this._values[i]))}`).join(', ')}${this._where}`;
+        return `UPDATE "${this._table}" SET ${this._cols.map((col, i) => `${col} = ${this._predicateParser.parse(cons(this._values[i]))}`).join(', ')}${this._where}`;
     }
 
     public where(expression: Expression): UpdateQuery {
@@ -93,7 +97,7 @@ export class PGDeleteQuery extends DeleteQuery {
     }
 
     public build(): string {
-        return `DELETE FROM ${this._table}${this._where}`;
+        return `DELETE FROM "${this._table}"${this._where}`;
     }
 
     public where(expression: any): DeleteQuery {
@@ -103,16 +107,40 @@ export class PGDeleteQuery extends DeleteQuery {
 }
 
 export class PGInsertQuery extends InsertQuery {
-    constructor(table: new (...args: any) => IModelEntity, cols: string[], values: any[], predicateParser: PredicateParser) {
+    constructor(table: new (...args: any) => IModelEntity, cols: string[], predicateParser: PredicateParser) {
         let tableName = TableDefinitionFactory.getTableName(table);
         let tableAllCols = TableDefinitionFactory.getTableCols(table)
         if (cols.filter(col => !tableAllCols.includes(col)).length > 0)
             throw new Error('Invalid column');
-        super(tableName, cols, values, predicateParser);
+        super(tableName, cols, predicateParser);
     }
     
     public build(): string {
-        return `INSERT INTO ${this._table} (${this._cols.join(', ')}) VALUES (${this._values.map(val => this._predicateParser.parse(cons(val))).join(', ')})`;
+        let query: string = `INSERT INTO "${this._table}" (${this._cols.join(', ')})`
+        if (this._from) {
+            query += ` SELECT ${this._data.join(', ')} FROM "${this._from}"`;
+        } else {
+            query += ` VALUES (${this._data.map(val => this._predicateParser.parse(cons(val))).join(', ')})`;
+        }
+        query += `${this._returning}`;
+        return query;
+    }
+
+    public values(values: any[]): InsertQuery {
+        this._data = values;
+        return this;
+    }
+
+    public from(record: string, values: DataExpression[]): InsertQuery {
+        this._from = record;
+        this._data = values.map(val => `${this._predicateParser.parse(val)}`);
+        return this;
+    }
+
+    public returning(col: string, record: string): InsertQuery {
+        this._queryId = record;
+        this._returning = ` RETURNING "${col}"`;
+        return this;
     }
 }
 
@@ -206,7 +234,7 @@ export function lte(expression1: Expression, expression2: Expression): Expressio
 }
 
 export function like(expression1: Expression, expression2: Expression): Expression {
-    return new BinaryExpression(expression1, "LIKE", expression2);
+    return new BinaryExpression(expression1, "ILIKE", expression2);
 }
 
 export function in_(expression1: Expression, expression2: Expression): Expression {
@@ -234,8 +262,8 @@ export class PGQueryBuilder implements IQueryBuilder {
         return QueryFactory.select(table, columns);
     }
 
-    public insert<T extends IModelEntity>(table: new (...args: any) => T, columns: string[], values: any[]): InsertQuery {
-        return QueryFactory.insert(table, columns, values);
+    public insert<T extends IModelEntity>(table: new (...args: any) => T, columns: string[]): InsertQuery {
+        return QueryFactory.insert(table, columns);
     }
 
     public update<T extends IModelEntity>(table: new (...args: any) => T, columns: string[], values: any[]): UpdateQuery {
@@ -253,9 +281,9 @@ class QueryFactory {
         return new PGSelectQuery(table, predicateParser, columns);
     }
 
-    static insert<T extends IModelEntity>(table: new (...args: any) => T, columns: string[], values: any[]): InsertQuery {
+    static insert<T extends IModelEntity>(table: new (...args: any) => T, columns: string[]): InsertQuery {
         let predicateParser = new PGPredicateParser();
-        return new PGInsertQuery(table, columns, values, predicateParser);
+        return new PGInsertQuery(table, columns, predicateParser);
     }
 
     static update<T extends IModelEntity>(table: new (...args: any) => T, columns: string[], values: any[]): UpdateQuery {

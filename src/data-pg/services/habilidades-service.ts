@@ -1,5 +1,5 @@
-import { Habilidad as HabilidadDTO} from "../../core/dtos/habilidad";
-import { HabilidadesCategoria as HabilidadesCategoriaDTO } from "../../core/dtos/habilidades-categoria";
+import { Habilidad as HabilidadDTO } from "../../core/dtos/habilidad";
+import { HabilidadesCategoria } from "../../core/dtos/habilidades-categoria";
 import { IHabilidadesService } from "../../core/services/ihabilidades-service";
 import { IQueryBuilder } from "../../core/patterns/builder/query-builder";
 import { IDatabase } from "../../core/database/idatabase";
@@ -27,14 +27,14 @@ export class HabilidadesService implements IHabilidadesService {
         //Se ejecuta la consulta
         let result = await this._database.query(query.build());
 
-        //Se convierte la respuesta a HabilidadDTO
+        //Se convierte la respuesta a Habilidad
         let habilidades: HabilidadDTO[] = [];
         for (let i = 0; i < result.rowCount; i++) {
             let habilidad: HabilidadDTO = new HabilidadDTO();
-            habilidad.id = result.rows[i].codigo;
-            habilidad.name = result.rows[i].habilidad;
-            habilidad.description = result.rows[i].descripcion;
-            habilidad.categoryId = result.rows[i].codigo_categoria;
+            habilidad.id = result.rows[i].habilidad_codigo;
+            habilidad.name = result.rows[i].habilidad_habilidad;
+            habilidad.description = result.rows[i].habilidad_descripcion;
+            habilidad.categoryId = result.rows[i].habilidad_codigo_categoria;
             habilidad.categoryName = result.rows[i].c_nombre
             habilidades.push(habilidad);
         }
@@ -43,7 +43,7 @@ export class HabilidadesService implements IHabilidadesService {
         return habilidades;
     }
 
-    public async getHabilidadesCategorias(): Promise<HabilidadesCategoriaDTO[]> {
+    public async getHabilidadesCategorias(): Promise<HabilidadesCategoria[]> {
         //Se prepara la consulta
         let query = this._queryBuilder.select(Categoria, ['codigo', 'nombre']);
 
@@ -51,11 +51,11 @@ export class HabilidadesService implements IHabilidadesService {
         let result = await this._database.query(query.build());
 
         //Se convierte la respuesta a HabilidadCategoriaDTO
-        let categorias: HabilidadesCategoriaDTO[] = [];
+        let categorias: HabilidadesCategoria[] = [];
         for (let i = 0; i < result.rowCount; i++) {
-            let categoria: HabilidadesCategoriaDTO = new HabilidadesCategoriaDTO();
-            categoria.id = result.rows[i].codigo;
-            categoria.name = result.rows[i].nombre;
+            let categoria: HabilidadesCategoria = new HabilidadesCategoria();
+            categoria.id = result.rows[i].categoria_codigo;
+            categoria.name = result.rows[i].categoria_nombre;
             categorias.push(categoria);
         }
 

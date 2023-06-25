@@ -2,7 +2,9 @@ export abstract class Expression {
     abstract accept(visitor: ExpressionVisitor): void;
 }
 
-export class PropertyExpression extends Expression {
+export abstract class DataExpression extends Expression {}
+
+export class PropertyExpression extends DataExpression {
     constructor(public propertyName: string, public format?: string) {
         super();
     }
@@ -12,7 +14,7 @@ export class PropertyExpression extends Expression {
     }
 }
 
-export class ConstantExpression extends Expression {
+export class ConstantExpression extends DataExpression {
     constructor(public value: any) {
         super();
     }

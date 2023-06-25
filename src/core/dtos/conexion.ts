@@ -6,6 +6,7 @@ export class Conexion {
     public name: string;
     public lastName: string;
     public nick: string;
+    public aceptada: boolean;
 
     constructor() {
         this.userId = 0;
@@ -13,6 +14,7 @@ export class Conexion {
         this.name = '';
         this.lastName = '';
         this.nick = '';
+        this.aceptada = false;
     }
 
     public set(property: string, value: any): Conexion {

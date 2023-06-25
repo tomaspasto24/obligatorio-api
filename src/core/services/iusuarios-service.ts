@@ -10,7 +10,7 @@ import { IDBService } from "./idb-service";
 import { Registro as RegistroDTO } from "../dtos/registro";
 
 export interface IUsuariosService extends IDBService {
-    getUsuariosFiltered(filter: UsuarioFiltroDTO): Promise<UsuarioDTO[]>;
+    getUsuariosFiltered(activeUserId: number, filter: UsuarioFiltroDTO, count: number): Promise<UsuarioDTO[]>;
     getUsuarioById(id: number): Promise<UsuarioDTO>;
     insUsuario(data: RegistroDTO): Promise<any>;
     getUsuarioByLogin(email: string, password: string): Promise<UsuarioDTO>;
@@ -18,7 +18,6 @@ export interface IUsuariosService extends IDBService {
     updUsuarioPerfil(id: number, data: PerfilModificacionDTO): Promise<any>;
     updUsuarioAddHabilidad(data: UsuarioHabilidadAccionDTO): Promise<any>;
     updUsuarioRemoveHabilidad(data: UsuarioHabilidadAccionDTO): Promise<any>;
-    updUsuarioChangePassAuth(id: number): Promise<any>;
     updUsuarioChangePass(data: PasswordCambioRealizacionDTO): Promise<any>;
     getUsuarioConexiones(id: number): Promise<ConexionDTO[]>;
     insUsuarioConexion(data: ConexionAccionDTO): Promise<any>;

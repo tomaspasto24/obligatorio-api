@@ -17,8 +17,10 @@ closedRouter.use(AuthenticationMiddleware.authenticate);
 openRouter.post('/iniciar-sesion', AuthenticationController.login);
 openRouter.post('/registrar-usuario', AuthenticationController.register);
 
+
 // Endpoints de manejo de usuarios
-closedRouter.get('/usuarios', UsuariosController.insUsuariosSearch);
+openRouter.post('/usuarios', UsuariosController.insUsuario);
+closedRouter.post('/usuarios/search', UsuariosController.insUsuariosSearch);
 closedRouter.get('/usuarios/:id', UsuariosController.getUsuarioById);
 closedRouter.get('/usuarios/:id/habilidades', UsuariosController.getUsuarioHabilidades);
 closedRouter.post('/usuarios/:id/habilidades', UsuariosController.insUsuarioHabilidades);
@@ -36,7 +38,7 @@ closedRouter.get('/usuarios/:id/solicitudes/activas', UsuariosController.getUsua
 
 // Endpoints de manejo de habilidades
 openRouter.get('/habilidades', HabilidadesController.getHabilidades);
-openRouter.get('/habilidades/categories', HabilidadesController.getHabilidadesCategorias);
+openRouter.get('/habilidades/categorias', HabilidadesController.getHabilidadesCategorias);
 closedRouter.post('/habilidades', HabilidadesController.insHabilidades);
 closedRouter.put('/habilidades/:id', HabilidadesController.updHabilidades);
 closedRouter.delete('/habilidades/:id', HabilidadesController.dltHabilidades);
