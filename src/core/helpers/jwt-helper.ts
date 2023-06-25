@@ -9,8 +9,6 @@ export class JWTHelper {
         const publicKey = fs.readFileSync(path.join(__dirname, './../../../public.key'), 'utf8');
         const publicKeyI: PublicKeyInput = {
             key: publicKey,
-            format: 'pem',
-            type: 'pkcs1',
         };
         const publicKeyO = createPublicKey(publicKeyI);
 
@@ -18,15 +16,18 @@ export class JWTHelper {
             algorithms: ['RS256'],
         };
 
-        return verify(token, publicKeyO, verifyOptions) as IJWTTokenPayload;
+        const decodedToken = verify(token, publicKeyO, verifyOptions) as IJWTTokenPayload;
+        return {
+            userId: decodedToken.userId,
+            email: decodedToken.email,
+            fullName: decodedToken.fullName,
+        } as IJWTTokenPayload;
     }
 
     static generateToken(payload: IJWTTokenPayload): string {
         const privateKey = fs.readFileSync(path.join(__dirname, './../../../private.key'), 'utf8');
         const privateKeyI: PrivateKeyInput = {
             key: privateKey,
-            format: 'pem',
-            type: 'pkcs1',
             passphrase: process.env.JWT_KEY_PASSPHRASE,
         };
         const privateKeyO = createPrivateKey(privateKeyI);
@@ -39,5 +40,43 @@ export class JWTHelper {
         const accessToken = sign(payload, privateKeyO, signOptionsAccess);
 
         return accessToken;
+    }
+
+    static generateCodeToken(payload: any): string {
+        const privateKey = fs.readFileSync(path.join(__dirname, './../../../private.key'), 'utf8');
+        const privateKeyI: PrivateKeyInput = {
+            key: privateKey,
+            passphrase: process.env.JWT_KEY_PASSPHRASE,
+        };
+        const privateKeyO = createPrivateKey(privateKeyI);
+
+        const signOptionsAccess: SignOptions = {
+            algorithm: 'RS256',
+            expiresIn: '1h',
+        };
+
+        const token = sign(payload, privateKeyO, signOptionsAccess);
+
+        return token;
+    }
+
+    static tokenIsExpired(token: string): boolean {
+        const publicKey = fs.readFileSync(path.join(__dirname, './../../../public.key'), 'utf8');
+        const publicKeyI: PublicKeyInput = {
+            key: publicKey,
+        };
+        const publicKeyO = createPublicKey(publicKeyI);
+
+        const verifyOptions: VerifyOptions = {
+            algorithms: ['RS256'],
+        };
+
+        try {
+            verify(token, publicKeyO, verifyOptions);
+            return false;
+        }
+        catch (err) {
+            return true;
+        }
     }
 }

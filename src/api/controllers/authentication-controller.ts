@@ -35,4 +35,8 @@ export class AuthenticationController {
             res.status(500).json({ message: 'Failed to authenticate user' });
         }
     }
+
+    static readonly register = async (req: any, res: any) => {
+        throw new Error('Not implemented');
+    }
 }

@@ -8,7 +8,7 @@ import { SolicitudRelevante } from "../../core/dtos/solicitud-relevante";
 import { ISolicitudesService } from "../../core/services/isolicitudes-service";
 
 export class SolicitudesService implements ISolicitudesService {
-    public async getSolicitudesRelevantes(): Promise<SolicitudRelevante[]> {
+    public async getSolicitudesRelevantes(id: number): Promise<SolicitudRelevante[]> {
         throw new Error("Method not implemented.");
     }
     public async getSolicitudesActivas(id: number): Promise<SolicitudActiva[]> {
