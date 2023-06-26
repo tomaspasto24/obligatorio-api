@@ -1,6 +1,6 @@
 export const postUser = {
     tags: ['Users'],
-    description: 'Create a new user in the system',
+    description: 'Crear un usuario en el sistema',
     operationId: 'postUser',
     requestBody: {
         content: {
@@ -10,23 +10,23 @@ export const postUser = {
                     properties: {
                         email: {
                             type: 'string',
-                            example: 'email@email.com',
+                            description: 'Email del usuario',
                         },
                         password: {
                             type: 'string',
-                            example: 'password',
+                            description: 'Contraseña del usuario',
                         },
                         nick: {
                             type: 'string',
-                            example: 'nick',
+                            description: 'Nick del usuario',
                         },
                         name: {
                             type: 'string',
-                            example: 'Robert',
+                            description: 'Nombre del usuario',
                         },
                         lastName: {
                             type: 'string',
-                            example: 'Robertson',
+                            description: 'Apellido del usuario',
                         },
                         skills: {
                             type: 'array',
@@ -44,42 +44,16 @@ export const postUser = {
     responses: {
         '200': {
             description: 'Usuario registrado correctamente',
-            content: {
-                'application/json': {
-                    schema: {
-                        type: 'object',
-                        properties: {
-                            message: {
-                                type: 'string',
-                                example: 'Usuario registrado correctamente',
-                            },
-                        },
-                    },
-                },
-            },
         },
         '500': {
             description: 'Error al registrar usuario',
-            content: {
-                'application/json': {
-                    schema: {
-                        type: 'object',
-                        properties: {
-                            message: {
-                                type: 'string',
-                                example: 'Error al registrar usuario',
-                            },
-                        },
-                    },
-                },
-            },
-        },
-    },
+        }
+    }
 };
 
 export const postUserSearch = {
     tags: ['Users'],
-    description: 'Search for users in the system',
+    description: 'Buscar usuarios en el sistema',
     operationId: 'postUserSearch',
     security: [
         {
@@ -94,15 +68,15 @@ export const postUserSearch = {
                     properties: {
                         email: {
                             type: 'string',
-                            example: 'email@email.com',
+                            description: 'Email del usuario',
                         },
                         nick: {
                             type: 'string',
-                            example: 'nick',
+                            description: 'Nick del usuario',
                         },
                         fullName: {
                             type: 'string',
-                            example: 'Robert Robertson',
+                            description: 'Nombre completo del usuario',
                         },
                         skills: {
                             type: 'array',
@@ -119,7 +93,7 @@ export const postUserSearch = {
     },
     responses: {
         '200': {
-            description: 'Users found',
+            description: 'Usuarios encontrados',
             content: {
                 'application/json': {
                     schema: {
@@ -129,23 +103,23 @@ export const postUserSearch = {
                             properties: {
                                 id: {
                                     type: 'number',
-                                    example: 1,
+                                    description: 'Identificador del usuario',
                                 },
                                 email: {
                                     type: 'string',
-                                    example: 'email@email.com',
+                                    description: 'Email del usuario',
                                 },
                                 nick: {
                                     type: 'string',
-                                    example: 'nick',
+                                    description: 'Nick del usuario',
                                 },
                                 name: {
                                     type: 'string',
-                                    example: 'Robert',
+                                    description: 'Nombre del usuario',
                                 },
                                 lastName: {
                                     type: 'string',
-                                    example: 'Robertson',
+                                    description: 'Apellido del usuario',
                                 },
                             },
                         },
@@ -155,26 +129,13 @@ export const postUserSearch = {
         },
         '500': {
             description: 'Error al buscar usuarios',
-            content: {
-                'application/json': {
-                    schema: {
-                        type: 'object',
-                        properties: {
-                            message: {
-                                type: 'string',
-                                example: 'Error al buscar usuarios',
-                            },
-                        },
-                    },
-                },
-            },
         },
     },
 };
 
 export const getUser = {
     tags: ['Users'],
-    description: 'Get a user by id',
+    description: 'Obtener un usuario del sistema',
     operationId: 'getUser',
     security: [
         {
@@ -185,7 +146,7 @@ export const getUser = {
         {
             name: 'id',
             in: 'path',
-            description: 'User id',
+            description: 'Identificador del usuario',
             required: true,
             schema: {
                 type: 'number',
@@ -195,7 +156,7 @@ export const getUser = {
     ],
     responses: {
         '200': {
-            description: 'User found',
+            description: 'Usuario encontrado',
             content: {
                 'application/json': {
                     schema: {
@@ -203,23 +164,23 @@ export const getUser = {
                         properties: {
                             id: {
                                 type: 'number',
-                                example: 1,
+                                description: 'Identificador del usuario',
                             },
                             email: {
                                 type: 'string',
-                                example: 'email@email.com',
+                                description: 'Email del usuario',
                             },
                             nick: {
                                 type: 'string',
-                                example: 'nick',
+                                description: 'Nick del usuario',
                             },
                             name: {
                                 type: 'string',
-                                example: 'Robert',
+                                description: 'Nombre del usuario',
                             },
                             lastName: {
                                 type: 'string',
-                                example: 'Robertson',
+                                description: 'Apellido del usuario',
                             },
                         },
                     },
@@ -228,26 +189,13 @@ export const getUser = {
         },
         '500': {
             description: 'Error al buscar usuario',
-            content: {
-                'application/json': {
-                    schema: {
-                        type: 'object',
-                        properties: {
-                            message: {
-                                type: 'string',
-                                example: 'Error al buscar usuario',
-                            },
-                        },
-                    },
-                },
-            },
         },
     },
 };
 
 export const getUserSkills = {
     tags: ['Users'],
-    description: 'Get a user skills by user id',
+    description: 'Obtener las habilidades de un usuario',
     operationId: 'getUserSkills',
     security: [
         {
@@ -258,7 +206,7 @@ export const getUserSkills = {
         {
             name: 'id',
             in: 'path',
-            description: 'User id',
+            description: 'Identificador del usuario',
             required: true,
             schema: {
                 type: 'number',
@@ -268,7 +216,7 @@ export const getUserSkills = {
     ],
     responses: {
         '200': {
-            description: 'User skills found',
+            description: 'Habilidades encontradas',
             content: {
                 'application/json': {
                     schema: {
@@ -278,23 +226,23 @@ export const getUserSkills = {
                             properties: {
                                 id: {
                                     type: 'number',
-                                    example: 1,
+                                    description: 'Identificador de la habilidad',
                                 },
                                 name: {
                                     type: 'string',
-                                    example: 'skill',
+                                    description: 'Nombre de la habilidad',
                                 },
                                 description: {
                                     type: 'string',
-                                    example: 'skill description',
+                                    description: 'Descripción de la habilidad',
                                 },
                                 categoryId: {
                                     type: 'number',
-                                    example: 1,
+                                    description: 'Identificador de la categoría',
                                 },
                                 categopryName: {
                                     type: 'string',
-                                    example: 'category',
+                                    description: 'Nombre de la categoría',
                                 },
                             },
                         },
@@ -304,58 +252,19 @@ export const getUserSkills = {
         },
         '500': {
             description: 'Error al buscar habilidades de usuario',
-            content: {
-                'application/json': {
-                    schema: {
-                        type: 'object',
-                        properties: {
-                            message: {
-                                type: 'string',
-                                example: 'Error al buscar habilidades de usuario',
-                            },
-                        },
-                    },
-                },
-            },
         },
         '400': {
-            description: 'Solicitud incorrecta',
-            content: {
-                'application/json': {
-                    schema: {
-                        type: 'object',
-                        properties: {
-                            message: {
-                                type: 'string',
-                                example: 'Solicitud incorrecta',
-                            },
-                        },
-                    },
-                },
-            },
+            description: 'Usuario no encontrado',
         },
         '401': {
             description: 'Usuario no autorizado',
-            content: {
-                'application/json': {
-                    schema: {
-                        type: 'object',
-                        properties: {
-                            message: {
-                                type: 'string',
-                                example: 'Usuario no autorizado',
-                            },
-                        },
-                    },
-                },
-            },
         },
     },
 };
 
 export const postUserSkill = {
     tags: ['Users'],
-    description: 'Add a skill to a user',
+    description: 'Agregar una habilidad a un usuario',
     operationId: 'postUserSkill',
     security: [
         {
@@ -366,7 +275,7 @@ export const postUserSkill = {
         {
             name: 'id',
             in: 'path',
-            description: 'User id',
+            description: 'Identificador del usuario',
             required: true,
             schema: {
                 type: 'number',
@@ -382,11 +291,11 @@ export const postUserSkill = {
                     properties: {
                         userId: {
                             type: 'number',
-                            example: 1,
+                            description: 'Identificador del usuario',
                         },
                         skillId: {
                             type: 'number',
-                            example: 1,
+                            description: 'Identificador de la habilidad',
                         },
                     },
                 },
@@ -396,7 +305,7 @@ export const postUserSkill = {
     },
     responses: {
         '200': {
-            description: 'Skill added to user',
+            description: 'Habilidad agregada a usuario',
             content: {
                 'application/json': {
                     schema: {
@@ -404,7 +313,7 @@ export const postUserSkill = {
                         properties: {
                             message: {
                                 type: 'string',
-                                example: 'Skill added to user',
+                                description: 'Habilidad agregada a usuario',
                             },
                         },
                     },
@@ -413,58 +322,19 @@ export const postUserSkill = {
         },
         '500': {
             description: 'Error al agregar habilidad a usuario',
-            content: {
-                'application/json': {
-                    schema: {
-                        type: 'object',
-                        properties: {
-                            message: {
-                                type: 'string',
-                                example: 'Error al agregar habilidad a usuario',
-                            },
-                        },
-                    },
-                },
-            },
         },
         '400': {
-            description: 'Solicitud incorrecta',
-            content: {
-                'application/json': {
-                    schema: {
-                        type: 'object',
-                        properties: {
-                            message: {
-                                type: 'string',
-                                example: 'Solicitud incorrecta',
-                            },
-                        },
-                    },
-                },
-            },
+            description: 'Usuario no encontrado',
         },
         '401': {
             description: 'Usuario no autorizado',
-            content: {
-                'application/json': {
-                    schema: {
-                        type: 'object',
-                        properties: {
-                            message: {
-                                type: 'string',
-                                example: 'Usuario no autorizado',
-                            },
-                        },
-                    },
-                },
-            },
         },
     },
 };
 
 export const deleteUserSkill = {
     tags: ['Users'],
-    description: 'Delete a skill from a user',
+    description: 'Eliminar una habilidad de un usuario',
     operationId: 'deleteUserSkill',
     security: [
         {
@@ -475,7 +345,7 @@ export const deleteUserSkill = {
         {
             name: 'id',
             in: 'path',
-            description: 'User id',
+            description: 'Identificador del usuario',
             required: true,
             schema: {
                 type: 'number',
@@ -485,7 +355,7 @@ export const deleteUserSkill = {
         {
             name: 'sId',
             in: 'path',
-            description: 'Skill id',
+            description: 'Identificador de la habilidad',
             required: true,
             schema: {
                 type: 'number',
@@ -495,7 +365,7 @@ export const deleteUserSkill = {
     ],
     responses: {
         '200': {
-            description: 'Skill deleted from user',
+            description: 'Habilidad eliminada de usuario',
             content: {
                 'application/json': {
                     schema: {
@@ -503,7 +373,7 @@ export const deleteUserSkill = {
                         properties: {
                             message: {
                                 type: 'string',
-                                example: 'Skill deleted from user',
+                                description: 'Habilidad eliminada de usuario',
                             },
                         },
                     },
@@ -512,58 +382,19 @@ export const deleteUserSkill = {
         },
         '500': {
             description: 'Error al eliminar habilidad de usuario',
-            content: {
-                'application/json': {
-                    schema: {
-                        type: 'object',
-                        properties: {
-                            message: {
-                                type: 'string',
-                                example: 'Error al eliminar habilidad de usuario',
-                            },
-                        },
-                    },
-                },
-            },
         },
         '400': {
-            description: 'Solicitud incorrecta',
-            content: {
-                'application/json': {
-                    schema: {
-                        type: 'object',
-                        properties: {
-                            message: {
-                                type: 'string',
-                                example: 'Solicitud incorrecta',
-                            },
-                        },
-                    },
-                },
-            },
+            description: 'Usuario no encontrado',
         },
         '401': {
             description: 'Usuario no autorizado',
-            content: {
-                'application/json': {
-                    schema: {
-                        type: 'object',
-                        properties: {
-                            message: {
-                                type: 'string',
-                                example: 'Usuario no autorizado',
-                            },
-                        },
-                    },
-                },
-            },
         },
     },
 };
 
 export const putUser = {
     tags: ['Users'],
-    description: 'Update a user',
+    description: 'Actualizar un usuario',
     operationId: 'putUser',
     security: [
         {
@@ -574,7 +405,7 @@ export const putUser = {
         {
             name: 'id',
             in: 'path',
-            description: 'User id',
+            description: 'Identificador del usuario',
             required: true,
             schema: {
                 type: 'number',
@@ -590,19 +421,19 @@ export const putUser = {
                     properties: {
                         email: {
                             type: 'string',
-                            example: 'email@email.com',
+                            description: 'Correo electrónico del usuario',
                         },
                         nick: {
                             type: 'string',
-                            example: 'nick',
+                            description: 'Nombre de usuario',
                         },
                         name: {
                             type: 'string',
-                            example: 'Robert',
+                            description: 'Nombre del usuario',
                         },
                         lastName: {
                             type: 'string',
-                            example: 'Robertson',
+                            description: 'Apellido del usuario',
                         },
                     },
                 },
@@ -612,76 +443,23 @@ export const putUser = {
     },
     responses: {
         '200': {
-            description: 'User updated',
-            content: {
-                'application/json': {
-                    schema: {
-                        type: 'object',
-                        properties: {
-                            message: {
-                                type: 'string',
-                                example: 'User updated',
-                            },
-                        },
-                    },
-                },
-            },
+            description: 'Usuario actualizado',
         },
         '500': {
             description: 'Error al actualizar usuario',
-            content: {
-                'application/json': {
-                    schema: {
-                        type: 'object',
-                        properties: {
-                            message: {
-                                type: 'string',
-                                example: 'Error al actualizar usuario',
-                            },
-                        },
-                    },
-                },
-
-            },
-            '400': {
-                description: 'Solicitud incorrecta',
-                content: {
-                    'application/json': {
-                        schema: {
-                            type: 'object',
-                            properties: {
-                                message: {
-                                    type: 'string',
-                                    example: 'Solicitud incorrecta',
-                                },
-                            },
-                        },
-                    },
-                },
-            },
-            '401': {
-                description: 'Usuario no autorizado',
-                content: {
-                    'application/json': {
-                        schema: {
-                            type: 'object',
-                            properties: {
-                                message: {
-                                    type: 'string',
-                                    example: 'Usuario no autorizado',
-                                },
-                            },
-                        },
-                    },
-                },
-            },
         },
-    }
+        '400': {
+            description: 'Usuario no encontrado',
+        },
+        '401': {
+            description: 'Usuario no autorizado',
+        },
+    },
 };
 
 export const getUserConnections = {
     tags: ['Users'],
-    description: 'Get user connections',
+    description: 'Obtener las conexiones de un usuario',
     operationId: 'getUserConnections',
     security: [
         {
@@ -692,7 +470,7 @@ export const getUserConnections = {
         {
             name: 'id',
             in: 'path',
-            description: 'User id',
+            description: 'Identificador del usuario',
             required: true,
             schema: {
                 type: 'number',
@@ -702,7 +480,7 @@ export const getUserConnections = {
     ],
     responses: {
         '200': {
-            description: 'User connections',
+            description: 'Conexiones de usuario',
             content: {
                 'application/json': {
                     schema: {
@@ -712,27 +490,27 @@ export const getUserConnections = {
                             properties: {
                                 userId: {
                                     type: 'number',
-                                    example: 1,
+                                    description: 'Identificador del usuario',
                                 },
                                 email: {
                                     type: 'string',
-                                    example: 'email@email.com',
+                                    description: 'Correo electrónico del usuario',
                                 },
                                 nick: {
                                     type: 'string',
-                                    example: 'nick',
+                                    description: 'Nombre de usuario',
                                 },
                                 name: {
                                     type: 'string',
-                                    example: 'Robert',
+                                    description: 'Nombre del usuario',
                                 },
                                 lastName: {
                                     type: 'string',
-                                    example: 'Robertson',
+                                    description: 'Apellido del usuario',
                                 },
                                 aceptada: {
                                     type: 'boolean',
-                                    example: false,
+                                    description: 'Indica si la conexión fue aceptada',
                                 },
                             },
                         },
@@ -742,58 +520,19 @@ export const getUserConnections = {
         },
         '500': {
             description: 'Error al obtener conexiones de usuario',
-            content: {
-                'application/json': {
-                    schema: {
-                        type: 'object',
-                        properties: {
-                            message: {
-                                type: 'string',
-                                example: 'Error al obtener conexiones de usuario',
-                            },
-                        },
-                    },
-                },
-            },
         },
         '400': {
-            description: 'Solicitud incorrecta',
-            content: {
-                'application/json': {
-                    schema: {
-                        type: 'object',
-                        properties: {
-                            message: {
-                                type: 'string',
-                                example: 'Solicitud incorrecta',    
-                            },
-                        },
-                    },
-                },
-            },
+            description: 'Usuario no encontrado',
         },
         '401': {
             description: 'Usuario no autorizado',
-            content: {
-                'application/json': {
-                    schema: {
-                        type: 'object',
-                        properties: {
-                            message: {
-                                type: 'string',
-                                example: 'Usuario no autorizado',
-                            },
-                        },
-                    },
-                },
-            },
         },
     },
 };
 
 export const postUserConnection = {
     tags: ['Users'],
-    description: 'Create a user connection',
+    description: 'Crear una conexión entre usuarios',
     operationId: 'postUserConnection',
     security: [
         {
@@ -804,7 +543,7 @@ export const postUserConnection = {
         {
             name: 'id',
             in: 'path',
-            description: 'User id',
+            description: 'Identificador del usuario',
             required: true,
             schema: {
                 type: 'number',
@@ -820,11 +559,11 @@ export const postUserConnection = {
                     properties: {
                         activeUserId: {
                             type: 'number',
-                            example: 1,
+                            description: 'Identificador del usuario activo',
                         },
                         passiveUserId: {
                             type: 'boolean',
-                            example: true,
+                            description: 'Identificador del usuario pasivo',
                         },
                     },
                 },
@@ -834,75 +573,23 @@ export const postUserConnection = {
     },
     responses: {
         '200': {
-            description: 'User connection created',
-            content: {
-                'application/json': {
-                    schema: {
-                        type: 'object',
-                        properties: {
-                            message: {
-                                type: 'string',
-                                example: 'User connection created',
-                            },
-                        },
-                    },
-                },
-            },
+            description: 'Conexión de usuario creada',
         },
         '500': {
             description: 'Error al crear conexión de usuario',
-            content: {
-                'application/json': {
-                    schema: {
-                        type: 'object',
-                        properties: {
-                            message: {
-                                type: 'string',
-                                example:'Error al crear conexión de usuario',
-                            },
-                        },
-                    },
-                },
-            },
         },
         '400': {
-            description: 'Solicitud incorrecta',
-            content: {
-                'application/json': {
-                    schema: {
-                        type: 'object',
-                        properties: {
-                            message: {
-                                type:'string',
-                                example: 'Solicitud incorrecta',
-                            },
-                        },
-                    },
-                },
-            },
+            description: 'Usuario no encontrado',
         },
         '401': {
             description: 'Usuario no autorizado',
-            content: {
-                'application/json': {
-                    schema: {
-                        type: 'object',
-                        properties: {
-                            message:{
-                                type: 'string',
-                                example: 'Usuario no autorizado',
-                            },
-                        },
-                    },
-                },
-            },
         },
     },
 };
 
 export const deleteUserConnection = {
     tags: ['Users'],
-    description: 'Delete a user connection',
+    description: 'Eliminar una conexión entre usuarios',
     operationId: 'deleteUserConnection',
     security: [
         {
@@ -913,7 +600,7 @@ export const deleteUserConnection = {
         {
             name: 'id',
             in: 'path',
-            description: 'User id',
+            description: 'Identificador del usuario 1',
             required: true,
             schema: {
                 type: 'number',
@@ -923,7 +610,7 @@ export const deleteUserConnection = {
         {
             name: 'cId',
             in: 'path',
-            description: 'Connection id',
+            description: 'Identificador del usuario 2',
             required: true,
             schema: {
                 type: 'number',
@@ -933,75 +620,23 @@ export const deleteUserConnection = {
     ],
     responses: {
         '200': {
-            description: 'User connection deleted',
-            content: {
-                'application/json': {
-                    schema: {
-                        type: 'object',
-                        properties: {
-                            message: {
-                                type:'string',
-                                example: 'User connection deleted',
-                            },
-                        },
-                    },
-                },
-            },
+            description: 'Conexión de usuario eliminada',
         },
         '500': {
             description: 'Error al eliminar conexión de usuario',
-            content: {
-                'application/json': {
-                    schema: {
-                        type: 'object',
-                        properties: {
-                            message:{
-                                type: 'string',
-                                example: 'Error al eliminar conexión de usuario',
-                            },
-                        },
-                    },
-                },
-            },
         },
         '400': {
-            description: 'Solicitud incorrecta',
-            content: {
-                'application/json': {
-                    schema: {
-                        type: 'object',
-                        properties: {
-                            message:{
-                                type: 'string',
-                                example: 'Solicitud incorrecta',
-                            },
-                        },
-                    },
-                },
-            },
+            description: 'Usuario no encontrado',
         },
         '401': {
             description: 'Usuario no autorizado',
-            content: {
-                'application/json': {
-                    schema: {
-                        type: 'object',
-                        properties: {
-                            message:{
-                                type: 'string',
-                                example: 'Usuario no autorizado',
-                            },
-                        },
-                    },
-                },
-            },
         },
     },
 };
 
 export const putUserConnection = {
     tags: ['Users'],
-    description: 'Update a user connection',
+    description: 'Actualizar una conexión entre usuarios',
     operationId: 'putUserConnection',
     security: [
         {
@@ -1012,7 +647,7 @@ export const putUserConnection = {
         {
             name: 'id',
             in: 'path',
-            description: 'User id',
+            description: 'Identificador del usuario 1',
             required: true,
             schema: {
                 type: 'number',
@@ -1022,7 +657,7 @@ export const putUserConnection = {
         {
             name: 'cId',
             in: 'path',
-            description: 'Connection id',
+            description: 'Identificador del usuario 2',
             required: true,
             schema: {
                 type: 'number',
@@ -1038,11 +673,11 @@ export const putUserConnection = {
                     properties: {
                         activeUserId: {
                             type: 'number',
-                            example: 1,
+                            description: 'Identificador del usuario activo',
                         },
                         passiveUserId: {
                             type: 'boolean',
-                            example: true,
+                            description: 'Identificador del usuario pasivo',
                         },
                     },
                 },
@@ -1052,75 +687,23 @@ export const putUserConnection = {
     },
     responses: {
         '200': {
-            description: 'User connection updated',
-            content: {
-                'application/json': {
-                    schema: {
-                        type: 'object',
-                        properties: {
-                            message: {
-                                type:'string',
-                                example: 'User connection updated',
-                            },
-                        },
-                    },
-                },
-            },
+            description: 'Conexión de usuario actualizada',
         },
         '500': {
             description: 'Error al actualizar conexión de usuario',
-            content: {
-                'application/json': {   
-                    schema: {
-                        type: 'object',
-                        properties: {
-                            message:{
-                                type: 'string',
-                                example: 'Error al actualizar conexión de usuario',
-                            },
-                        },
-                    },
-                },
-            },
         },
         '400': {
-            description: 'Solicitud incorrecta',
-            content: {
-                'application/json': {
-                    schema: {
-                        type: 'object',
-                        properties: {
-                            message:{
-                                type: 'string',
-                                example: 'Solicitud incorrecta',
-                            },
-                        },
-                    },
-                },
-            },
+            description: 'Usuario no encontrado',
         },
         '401': {
             description: 'Usuario no autorizado',
-            content: {
-                'application/json': {
-                    schema: {
-                        type: 'object',
-                        properties: {
-                            message:{
-                                type: 'string',
-                                example: 'Usuario no autorizado',
-                            },
-                        },
-                    },
-                },
-            },
         },
     },
 };
 
 export const postUserPassword = {
     tags: ['Users'],
-    description: 'Update a user password',
+    description: 'Iniciar actualización de contraseña de usuario',
     operationId: 'postUserPassword',
     security: [
         {
@@ -1131,7 +714,7 @@ export const postUserPassword = {
         {
             name: 'id',
             in: 'path',
-            description: 'User id',
+            description: 'Identificador del usuario',
             required: true,
             schema: {
                 type: 'number',
@@ -1141,75 +724,23 @@ export const postUserPassword = {
     ],
     responses: {
         '200': {
-            description: 'User password update started',
-            content: {
-                'application/json': {
-                    schema: {
-                        type: 'object',
-                        properties: {
-                            message: {
-                                type:'string',
-                                example: 'User password update started',
-                            },
-                        },
-                    },
-                },
-            },
+            description: 'Actualización de contraseña de usuario iniciada',
         },
         '500': {
             description: 'Error al iniciar actualización de contraseña de usuario',
-            content: {
-                'application/json': {
-                    schema: {
-                        type: 'object',
-                        properties: {
-                            message:{
-                                type: 'string',
-                                example: 'Error al iniciar actualización de contraseña de usuario',
-                            },
-                        },
-                    },
-                },
-            },
         },
         '400': {
-            description: 'Solicitud incorrecta',
-            content: {
-                'application/json': {
-                    schema: {
-                        type: 'object',
-                        properties: {
-                            message:{
-                                type: 'string',
-                                example: 'Solicitud incorrecta',
-                            },
-                        },
-                    },
-                },
-            },
+            description: 'Usuario no encontrado',
         },
         '401': {
             description: 'Usuario no autorizado',
-            content: {
-                'application/json': {
-                    schema: {
-                        type: 'object',
-                        properties: {
-                            message:{
-                                type: 'string',
-                                example: 'Usuario no autorizado',
-                            },
-                        },
-                    },
-                },
-            },
-        },
+        }
     },
 };
 
 export const putUserPassword = {
     tags: ['Users'],
-    description: 'Update a user password',
+    description: 'Actualizar contraseña de usuario',
     operationId: 'putUserPassword',
     security: [
         {
@@ -1220,7 +751,7 @@ export const putUserPassword = {
         {
             name: 'id',
             in: 'path',
-            description: 'User id',
+            description: 'Identificador del usuario',
             required: true,
             schema: {
                 type: 'number',
@@ -1236,15 +767,15 @@ export const putUserPassword = {
                     properties: {
                         userId: {
                             type: 'number',
-                            example: 1,
+                            description: 'Identificador del usuario',
                         },
                         password: {
                             type: 'string',
-                            example: '123456',
+                            description: 'Contraseña del usuario',
                         },
                         authCode: {
                             type: 'string',
-                            example: '123456',
+                            description: 'Código de autenticación',
                         },
                     },
                 },
@@ -1254,75 +785,23 @@ export const putUserPassword = {
     },
     responses: {
         '200': {
-            description: 'User password updated',
-            content: {
-                'application/json': {
-                    schema: {
-                        type: 'object',
-                        properties: {
-                            message: {
-                                type:'string',
-                                example: 'User password updated',
-                            },
-                        },
-                    },
-                },
-            },
+            description: 'Contraseña de usuario actualizada',
         },
         '500': {
             description: 'Error al actualizar contraseña de usuario',
-            content: {
-                'application/json': {
-                    schema: {
-                        type: 'object',
-                        properties: {
-                            message:{
-                                type: 'string',
-                                example: 'Error al actualizar contraseña de usuario',
-                            },
-                        },
-                    },
-                },
-            },
         },
         '400': {
-            description: 'Solicitud incorrecta',
-            content: {
-                'application/json': {
-                    schema: {
-                        type: 'object',
-                        properties: {
-                            message:{
-                                type: 'string',
-                                example: 'Solicitud incorrecta',
-                            },
-                        },
-                    },
-                },
-            },
+            description: 'Usuario no encontrado',
         },
         '401': {
             description: 'Usuario no autorizado',
-            content: {
-                'application/json': {
-                    schema: {
-                        type: 'object',
-                        properties: {
-                            message:{
-                                type: 'string',
-                                example: 'Usuario no autorizado',
-                            },
-                        },
-                    },
-                },
-            },
         },
     },
 };
 
 export const getUserRequestsRelevant = {
     tags: ['Users'],
-    description: 'Get user requests relevant',
+    description: 'Obtener solicitudes relevantes de un usuario',
     operationId: 'getUserRequestsRelevant',
     security: [
         {
@@ -1333,7 +812,7 @@ export const getUserRequestsRelevant = {
         {
             name: 'id',
             in: 'path',
-            description: 'User id',
+            description: 'Identificador del usuario',
             required: true,
             schema: {
                 type: 'number',
@@ -1343,7 +822,7 @@ export const getUserRequestsRelevant = {
     ],
     responses: {
         '200': {
-            description: 'User requests relevant obtained',
+            description: 'Solicitudes relevantes de usuario obtenidas',
             content: {
                 'application/json': {
                     schema: {
@@ -1353,64 +832,64 @@ export const getUserRequestsRelevant = {
                             properties: {
                                 id: {
                                     type: 'number',
-                                    example: 1,
+                                    description: 'Identificador de la solicitud',
                                 },
                                 title: {
                                     type: 'string',
-                                    example: 'Solicitud de prueba',
+                                    description: 'Título de la solicitud',
                                 },
                                 description: {
                                     type: 'string',
-                                    example: 'Solicitud de prueba',
+                                    description: 'Descripción de la solicitud',
                                 },
                                 timeStart: {
                                     type: 'string',
-                                    example: '2021-05-05 00:00:00',
+                                    description: 'Fecha de inicio de la solicitud',
                                 },
                                 location: {
                                     type: 'string',
-                                    example: 'Calle 123',
+                                    description: 'Ubicación de la solicitud',
                                 },
                                 requesterId: {
                                     type: 'number',
-                                    example: 1,
+                                    description: 'Identificador del solicitante',
                                 },
                                 requesterName: {
                                     type: 'string',
-                                    example: 'Juan',
+                                    description: 'Nombre del solicitante',
                                 },
                                 requesterLastname: {
                                     type: 'string',
-                                    example: 'Juancho',
+                                    description: 'Apellido del solicitante',
                                 },
                                 skill: {
                                     type: 'object',
                                     properties: {
                                         id: {
                                             type: 'number',
-                                            example: 1,
+                                            description: 'Identificador de la habilidad',
                                         },
                                         name: {
                                             type: 'string',
-                                            example: 'Carpintería',
+                                            description: 'Nombre de la habilidad',	
                                         },
                                         description: {
                                             type: 'string',
-                                            example: 'Carpintería',
+                                            description: 'Descripción de la habilidad',
                                         },
                                         categoryId: {
                                             type: 'number',
-                                            example: 1,
+                                            description: 'Identificador de la categoría',
                                         },
                                         categoryName: {
                                             type: 'string',
-                                            example: 'Mantenimiento',
+                                            description: 'Nombre de la categoría',
                                         },
                                     },
                                 },
                                 status: {
                                     type: 'string',
-                                    example: 'active',
+                                    description: 'Estado de la solicitud',
                                 },
                             },
                         },
@@ -1420,58 +899,19 @@ export const getUserRequestsRelevant = {
         },
         '500': {
             description: 'Error al obtener solicitudes relevantes de usuario',
-            content: {
-                'application/json': {
-                    schema: {
-                        type: 'object',
-                        properties: {
-                            message: {
-                                type:'string',
-                                example: 'Error al obtener solicitudes relevantes de usuario',
-                            },
-                        },
-                    },
-                },
-            },
         },
         '400': {
-            description: 'Solicitud incorrecta',
-            content: {
-                'application/json': {
-                    schema: {
-                        type: 'object',
-                        properties: {
-                            message: {
-                                type:'string',
-                                example: 'Solicitud incorrecta',
-                            },
-                        },
-                    },
-                },
-            },
+            description: 'Usuario no encontrado',
         },
         '401': {
-            description: 'Usuario no autorizado',   
-            content: {
-                'application/json': {
-                    schema: {
-                        type: 'object',
-                        properties: {
-                            message: {
-                                type:'string',
-                                example: 'Usuario no autorizado',
-                            },
-                        },
-                    },
-                },
-            },
+            description: 'Usuario no autorizado',
         },
     },
 };
 
 export const getUserRequestsActive = {
     tags: ['Users'],
-    description: 'Get user requests active',
+    description: 'Obtener solicitudes activas de un usuario',
     operationId: 'getUserRequestsActive',
     security: [
         {
@@ -1482,7 +922,7 @@ export const getUserRequestsActive = {
         {
             name: 'id',
             in: 'path',
-            description: 'User id',
+            description: 'Identificador del usuario',
             required: true,
             schema: {
                 type: 'number',
@@ -1492,7 +932,7 @@ export const getUserRequestsActive = {
     ],
     responses: {
         '200': {
-            description: 'User requests active obtained',
+            description: 'Solicitudes activas de usuario obtenidas',
             content: {
                 'application/json': {
                     schema: {
@@ -1502,76 +942,76 @@ export const getUserRequestsActive = {
                             properties: {
                                 id: {
                                     type: 'number',
-                                    example: 1,
+                                    description: 'Identificador de la solicitud',
                                 },
                                 title: {
                                     type: 'string',
-                                    example: 'Solicitud de prueba',
+                                    description: 'Título de la solicitud',
                                 },
                                 description: {
                                     type: 'string',
-                                    example: 'Solicitud de prueba',
+                                    description: 'Descripción de la solicitud',
                                 },
                                 timeStart: {
                                     type: 'string',
-                                    example: '2021-05-05 00:00:00',
+                                    description: 'Fecha de inicio de la solicitud',
                                 },
                                 location: {
                                     type: 'string',
-                                    example: 'Calle 123',
+                                    description: 'Ubicación de la solicitud',
                                 },
                                 requesterId: {
                                     type: 'number',
-                                    example: 1,
+                                    description: 'Identificador del solicitante',
                                 },
                                 requesterName: {
                                     type: 'string',
-                                    example: 'Juan',
+                                    description: 'Nombre del solicitante',
                                 },
                                 requesterLastname: {
                                     type: 'string',
-                                    example: 'Juancho',
+                                    description: 'Apellido del solicitante',
                                 },
                                 providerId: {
                                     type: 'number',
-                                    example: 1,
+                                    description: 'Identificador del proveedor',
                                 },
                                 providerName: {
                                     type: 'string',
-                                    example: 'Marcos',
+                                    description: 'Nombre del proveedor',
                                 },
                                 providerLastname: {
                                     type: 'string',
-                                    example: 'Marquito',
+                                    description: 'Apellido del proveedor',
                                 },
                                 skill: {
                                     type: 'object',
                                     properties: {
                                         id: {
                                             type: 'number',
-                                            example: 1,
+                                            description: 'Identificador de la habilidad',
                                         },
                                         name: {
                                             type: 'string',
-                                            example: 'Carpintería',
+                                            description: 'Nombre de la habilidad',
                                         },
                                         description: {
                                             type: 'string',
-                                            example: 'Carpintería',
+                                            description: 'Descripción de la habilidad',
                                         },
                                         categoryId: {
                                             type: 'number',
-                                            example: 1,
+                                            description: 'Identificador de la categoría',
                                         },
                                         categoryName: {
                                             type: 'string',
-                                            example: 'Mantenimiento',
+                                            description: 'Nombre de la categoría',
                                         },
                                     },
                                 },
                                 status: {
                                     type: 'string',
-                                    example: 'active',
+                                    description: 'Estado de la solicitud',
                                 },
 
                             },
@@ -1582,51 +1022,12 @@ export const getUserRequestsActive = {
         },
         '500': {
             description: 'Error al obtener solicitudes activas de usuario',
-            content: {
-                'application/json': {
-                    schema: {
-                        type: 'object',
-                        properties: {
-                            message: {
-                                type:'string',
-                                example: 'Error al obtener solicitudes activas de usuario',
-                            },
-                        },
-                    },
-                },
-            },
         },
         '400': {
-            description: 'Solicitud incorrecta',
-            content: {
-                'application/json': {
-                    schema: {
-                        type: 'object',
-                        properties: {
-                            message: {
-                                type:'string',
-                                example: 'Solicitud incorrecta',
-                            },
-                        },
-                    },
-                },
-            },
+            description: 'Usuario no encontrado',
         },
         '401': {
             description: 'Usuario no autorizado',
-            content: {
-                'application/json': {
-                    schema: {
-                        type: 'object',
-                        properties: {
-                            message: {
-                                type:'string',
-                                example: 'Usuario no autorizado',
-                            },
-                        },
-                    },
-                },
-            },
         },
     },
 };

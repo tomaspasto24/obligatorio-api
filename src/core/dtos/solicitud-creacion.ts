@@ -5,8 +5,6 @@ export class SolicitudCreacion {
     public description: string;
     public location: string;
     public requesterId: number;
-    public requesterName: string;
-    public requesterLastName: string;
     public skill: number;
 
     constructor() {
@@ -14,8 +12,6 @@ export class SolicitudCreacion {
         this.description = '';
         this.location = '';
         this.requesterId = 0;
-        this.requesterName = '';
-        this.requesterLastName = '';
         this.skill = 0;
     }
 
