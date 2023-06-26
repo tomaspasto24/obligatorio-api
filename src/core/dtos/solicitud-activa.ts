@@ -31,7 +31,6 @@ export class SolicitudActiva {
         this.providerId = 0;
         this.providerName = '';
         this.providerLastName = '';
-        this.activeUserRol = null;
         this.skill = null;
         this.status = null;
     }
