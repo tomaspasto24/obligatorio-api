@@ -7,5 +7,4 @@ export class Mensaje implements IModelEntity {
     public eliminado: boolean = false;
     public solicitud_id: number = 0;
     public id_emisor: number = 0;
-    public id_remitente: number = 0;
 }

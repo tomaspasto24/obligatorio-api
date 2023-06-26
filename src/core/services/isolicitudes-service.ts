@@ -8,7 +8,7 @@ import { Chat as ChatDTO } from "../dtos/chat";
 import { IDBService } from "./idb-service";
 
 export interface ISolicitudesService extends IDBService {
-    getSolicitudesRelevantes(id: number): Promise<SolicitudRelevanteDTO[]>;
+    getSolicitudesRelevantes(id: number, count: number): Promise<SolicitudRelevanteDTO[]>;
     getSolicitudesActivas(id: number): Promise<SolicitudActivaDTO[]>;
     getSolicitud(id: number) : Promise<SolicitudDTO>;
     updSolicitud(id: number, data: SolicitudDTO): Promise<any>;
@@ -16,6 +16,6 @@ export interface ISolicitudesService extends IDBService {
     updSolicitudAceptar(data: SolicitudAceptacionDTO): Promise<any>;
     updSolicitudFinalizar(data: SolicitudFinalizacionDTO): Promise<any>;
     getSolicitudChat(id: number): Promise<ChatDTO>;
-    insSolicitudChatMensaje(id: number, data: string): Promise<any>;
-    dltSolicitudChatMensaje(id: number, mensaje: number): Promise<any>;
+    insSolicitudChatMensaje(id: number, data: string, user_id: number): Promise<any>;
+    dltSolicitudChatMensaje(id: number): Promise<any>;
 }

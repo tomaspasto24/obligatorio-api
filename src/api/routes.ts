@@ -51,5 +51,5 @@ closedRouter.put('/solicitudes/:id', SolicitudesController.updSolicitud);
 closedRouter.post('/solicitudes/:id/aceptar', SolicitudesController.updSolicitudAceptar);
 closedRouter.get('/solicitudes/:id/chat', SolicitudesController.getSolicitudChat);
 closedRouter.post('/solicitudes/:id/chat/mensajes', SolicitudesController.insSolicitudChatMensaje);
-closedRouter.delete('/solicitudes/:id/chat/mensajes/:msgId', SolicitudesController.dltSolicitudChat);
+closedRouter.delete('/solicitudes/:id/chat/mensajes/:msgId', SolicitudesController.dltSolicitudChatMensaje);
 closedRouter.post('/solicitudes/:id/finalizar', SolicitudesController.updSolicitudFinalizar);

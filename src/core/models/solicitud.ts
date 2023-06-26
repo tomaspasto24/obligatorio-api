@@ -11,4 +11,6 @@ export class Solicitud implements IModelEntity {
     public opinion_creador: string = '';
     public opinion_acepta: string = '';
     public estado: string = '';
+    public cerrado_creador: boolean = false;
+    public cerrado_acepta: boolean = false;
 }
