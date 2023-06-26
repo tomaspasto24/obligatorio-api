@@ -5,8 +5,8 @@ import { SolicitudCreacion } from "../../core/dtos/solicitud-creacion";
 import { IRequestWrapper } from "../../core/types/request-wrapper";
 import { SolicitudAceptacion } from "../../core/dtos/solicitud-aceptacion";
 import { SolicitudFinalizacion } from "../../core/dtos/solicitud-finalizacion";
-import { Mensaje } from "../../core/dtos/mensaje";
 import { MensajeCreacion } from "../../core/dtos/mensaje-creacion";
+import { Chat } from "../../core/dtos/chat";
 
 export class SolicitudesController {
 
@@ -25,7 +25,7 @@ export class SolicitudesController {
 
     static readonly insSolicitud = async (req: any, res: any) => {
         try {
-            const body: SolicitudCreacion = SolicitudCreacion.fromJson((req.bodyas as IRequestWrapper).body);
+            const body: SolicitudCreacion = SolicitudCreacion.fromJson((req.body as IRequestWrapper).body);
 
             let solicitudesService: ISolicitudesService = DBServiceFactory.instance.getSolicitudesService();
             await solicitudesService.insSolicitud(body);
@@ -40,7 +40,7 @@ export class SolicitudesController {
     static readonly updSolicitud = async (req: any, res: any) => { //by id
         try {
             const id: number = req.params.id;
-            const body: Solicitud = Solicitud.fromJson((req.bodyas as IRequestWrapper).body);
+            const body: Solicitud = Solicitud.fromJson((req.body as IRequestWrapper).body);
 
             let solicitudesService: ISolicitudesService = DBServiceFactory.instance.getSolicitudesService();
             await solicitudesService.updSolicitud(id, body);
@@ -53,7 +53,7 @@ export class SolicitudesController {
 
     static readonly updSolicitudAceptar = async (req: any, res: any) => {
         try {
-            const body: SolicitudAceptacion = SolicitudAceptacion.fromJson((req.bodyas as IRequestWrapper).body);
+            const body: SolicitudAceptacion = SolicitudAceptacion.fromJson((req.body as IRequestWrapper).body);
 
             let solicitudesService: ISolicitudesService = DBServiceFactory.instance.getSolicitudesService();
             await solicitudesService.updSolicitudAceptar(body);
@@ -69,7 +69,7 @@ export class SolicitudesController {
         try {
             const id: number = req.params.id;
             let solicitudesService: ISolicitudesService = DBServiceFactory.instance.getSolicitudesService();
-            const solicitud: Solicitud = await solicitudesService.getSolicitud(id);
+            const solicitud: Chat = await solicitudesService.getSolicitudChat(id);
 
             res.status(200).json(solicitud);
         } catch (error: any) {
@@ -106,7 +106,7 @@ export class SolicitudesController {
 
     static readonly updSolicitudFinalizar = async (req: any, res: any) => {
         try {
-            const body: SolicitudFinalizacion = SolicitudFinalizacion.fromJson((req.bodyas as IRequestWrapper).body);
+            const body: SolicitudFinalizacion = SolicitudFinalizacion.fromJson((req.body as IRequestWrapper).body);
 
             let solicitudesService: ISolicitudesService = DBServiceFactory.instance.getSolicitudesService();
             await solicitudesService.updSolicitudFinalizar(body);
