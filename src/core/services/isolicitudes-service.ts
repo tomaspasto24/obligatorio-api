@@ -11,11 +11,11 @@ export interface ISolicitudesService extends IDBService {
     getSolicitudesRelevantes(id: number, count: number): Promise<SolicitudRelevanteDTO[]>;
     getSolicitudesActivas(id: number): Promise<SolicitudActivaDTO[]>;
     getSolicitud(id: number) : Promise<SolicitudDTO>;
-    updSolicitud(id: number, data: SolicitudDTO): Promise<any>;
+    updSolicitud(id: number, data: SolicitudCreacionDTO): Promise<any>;
     insSolicitud(data: SolicitudCreacionDTO): Promise<any>;
     updSolicitudAceptar(data: SolicitudAceptacionDTO): Promise<any>;
     updSolicitudFinalizar(data: SolicitudFinalizacionDTO): Promise<any>;
-    getSolicitudChat(id: number): Promise<ChatDTO>;
+    getSolicitudChat(id: number, activeUserId: number): Promise<ChatDTO>;
     insSolicitudChatMensaje(id: number, data: string, user_id: number): Promise<any>;
-    dltSolicitudChatMensaje(id: number): Promise<any>;
+    dltSolicitudChatMensaje(activeUserId: number, id: number): Promise<any>;
 }

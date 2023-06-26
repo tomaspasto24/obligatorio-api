@@ -13,11 +13,9 @@ closedRouter.use(AuthenticationMiddleware.authenticate);
 // Los endpoints que requieren autenticación se definen en closedRouter
 // Los endpoints que no requieren autenticación se definen en openRouter
 
-
 // Endpoints de registro e inicio de sesión
 openRouter.post('/autenticacion/ingreso', AuthenticationController.login);
 openRouter.post('/autenticacion/registro', AuthenticationController.register);
-
 
 // Endpoints de manejo de usuarios
 openRouter.post('/usuarios', UsuariosController.insUsuario);
@@ -36,7 +34,6 @@ closedRouter.put('/usuarios/:id/password', UsuariosController.updUsuarioPassChan
 closedRouter.get('/usuarios/:id/solicitudes/relevantes', UsuariosController.getUsuarioSolicitudesRelevantes);
 closedRouter.get('/usuarios/:id/solicitudes/activas', UsuariosController.getUsuarioSolicitudesActivas);
 
-
 // Endpoints de manejo de habilidades
 openRouter.get('/habilidades', HabilidadesController.getHabilidades);
 openRouter.get('/habilidades/categorias', HabilidadesController.getHabilidadesCategorias);
@@ -44,13 +41,11 @@ closedRouter.post('/habilidades', HabilidadesController.insHabilidades);
 closedRouter.put('/habilidades/:id', HabilidadesController.updHabilidades);
 closedRouter.delete('/habilidades/:id', HabilidadesController.dltHabilidades);
 
-
 // Endpoints de manejo de solicitudes
 closedRouter.get('/solicitudes/:id', SolicitudesController.getSolicitud);
 closedRouter.post('/solicitudes', SolicitudesController.insSolicitud);
 closedRouter.put('/solicitudes/:id', SolicitudesController.updSolicitud);
 closedRouter.put('/solicitudes/:id/aceptar', SolicitudesController.updSolicitudAceptar);
-closedRouter.put('/solicitudes/:id/rechazar', SolicitudesController.updSolicitudAceptar);
 closedRouter.get('/solicitudes/:id/chat', SolicitudesController.getSolicitudChat);
 closedRouter.post('/solicitudes/:id/chat/mensajes', SolicitudesController.insSolicitudChatMensaje);
 closedRouter.delete('/solicitudes/:id/chat/mensajes/:msgId', SolicitudesController.dltSolicitudChatMensaje);

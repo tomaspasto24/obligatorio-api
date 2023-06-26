@@ -1,6 +1,6 @@
 import { login, registry } from "./autenticacion";
 import { deleteHabilidad, getHabilidades, getHabilidadesCategorias, postHabilidad, putHabilidad } from "./habilidades";
-import { deleteSolicitudChatMensaje, getSolicitud, getSolicitudChat, postSolicitud, postSolicitudChatMensaje, putSolicitud, putSolicitudAceptar, putSolicitudFinalizar, putSolicitudRechazar } from "./solicitudes";
+import { deleteSolicitudChatMensaje, getSolicitud, getSolicitudChat, postSolicitud, postSolicitudChatMensaje, putSolicitud, putSolicitudAceptar, putSolicitudFinalizar } from "./solicitudes";
 import { deleteUserConnection, deleteUserSkill, getUser, getUserConnections, getUserRequestsActive, getUserRequestsRelevant, getUserSkills, postUser, postUserConnection, postUserPassword, postUserSearch, postUserSkill, putUser, putUserConnection, putUserPassword } from "./usuarios";
 
 export const documentation = {
@@ -102,9 +102,6 @@ export const documentation = {
         },
         '/api/solicitudes/{id}/aceptar': {
             put: putSolicitudAceptar,
-        },
-        '/api/solicitudes/{id}/rechazar': {
-            put: putSolicitudRechazar,
         },
         '/api/solicitudes/{id}/chat': {
             get: getSolicitudChat,

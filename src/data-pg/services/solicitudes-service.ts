@@ -1,10 +1,10 @@
-import { Chat } from "../../core/dtos/chat";
+import { Chat as ChatDTO } from "../../core/dtos/chat";
 import { Solicitud as SolicitudDTO } from "../../core/dtos/solicitud";
-import { SolicitudAceptacion } from "../../core/dtos/solicitud-aceptacion";
-import { SolicitudActiva } from "../../core/dtos/solicitud-activa";
-import { SolicitudCreacion } from "../../core/dtos/solicitud-creacion";
-import { SolicitudFinalizacion } from "../../core/dtos/solicitud-finalizacion";
-import { SolicitudRelevante } from "../../core/dtos/solicitud-relevante";
+import { SolicitudAceptacion as SolicitudAceptacionDTO } from "../../core/dtos/solicitud-aceptacion";
+import { SolicitudActiva as SolicitudActivaDTO } from "../../core/dtos/solicitud-activa";
+import { SolicitudCreacion as SolicitudCreacionDTO } from "../../core/dtos/solicitud-creacion";
+import { SolicitudFinalizacion as SolicitudFinalizacionDTO } from "../../core/dtos/solicitud-finalizacion";
+import { SolicitudRelevante as SolicitudRelevanteDTO } from "../../core/dtos/solicitud-relevante";
 import { ISolicitudesService } from "../../core/services/isolicitudes-service";
 import { IQueryBuilder, InsertQuery, Query } from "../../core/patterns/builder/query-builder";
 import { IDatabase } from "../../core/database/idatabase";
@@ -33,7 +33,7 @@ export class SolicitudesService implements ISolicitudesService {
         this._queryBuilder = new PGQueryBuilder();
     }
 
-    public async getSolicitudesRelevantes(id: number, count: number): Promise<SolicitudRelevante[]> {
+    public async getSolicitudesRelevantes(id: number, count: number): Promise<SolicitudRelevanteDTO[]> {
         let query = this._queryBuilder.select(Solicitud, ['id', 'localizacion', 'fecha_creacion', 'id_creador', 'id_acepta', 'titulo', 'descripcion', 'opinion_creador', 'opinion_acepta', 'estado', 'cerrado_creador', 'cerrado_acepta']);
         query = query.join(Usuario, 'C', equal(prop('Solicitud', 'id_creador'), prop('C', 'id')), ['nombres', 'apellidos']);
         query = query.join(SolicitudHabilidad, 'SH', equal(prop('Solicitud', 'id'), prop('SH', 'id_solicitud')), ['codigo_habilidad']);
@@ -43,9 +43,9 @@ export class SolicitudesService implements ISolicitudesService {
         
         let response = await this._database.query(query.build());
         
-        let solicitudes: SolicitudRelevante[] = [];
+        let solicitudes: SolicitudRelevanteDTO[] = [];
         for (let row of response.rows) {
-            let solicitud: SolicitudRelevante = new SolicitudRelevante();
+            let solicitud: SolicitudRelevanteDTO = new SolicitudRelevanteDTO();
             solicitud.id = row.solicitud_id;
             solicitud.title = row.solicitud_titulo;
             solicitud.description = row.solicitud_descripcion;
@@ -66,14 +66,14 @@ export class SolicitudesService implements ISolicitudesService {
         // Ordenar usuarios por coeficiente
         solicitudes = solicitudes.filter(s => s.requesterId != id);
         solicitudes = await this.sortSolicitudesRelevantesByCoefficient(id, solicitudes);
-        solicitudes = solicitudes.filter((s: SolicitudRelevante) => (new Date()).getTime() - s.timeStart.getTime() < 86400000);
+        solicitudes = solicitudes.filter((s: SolicitudRelevanteDTO) => (new Date()).getTime() - s.timeStart.getTime() < 86400000);
         // TODO: Filtrar solicitudes por localizacion
         solicitudes = solicitudes.slice(0, count);
 
         return solicitudes;
     }
     
-    public async getSolicitudesActivas(id: number): Promise<SolicitudActiva[]> {
+    public async getSolicitudesActivas(id: number): Promise<SolicitudActivaDTO[]> {
         let query = this._queryBuilder.select(Solicitud, ['id', 'localizacion', 'fecha_creacion', 'id_creador', 'id_acepta', 'titulo', 'descripcion', 'opinion_creador', 'opinion_acepta', 'estado', 'cerrado_creador', 'cerrado_acepta']);
         query = query.join(Usuario, 'C', equal(prop('Solicitud', 'id_creador'), prop('C', 'id')), ['nombres', 'apellidos']);
         query = query.join(Usuario, 'A', equal(prop('Solicitud', 'id_acepta'), prop('A', 'id')), ['nombres', 'apellidos']);
@@ -89,9 +89,9 @@ export class SolicitudesService implements ISolicitudesService {
 
         let response = await this._database.query(query.build());
 
-        let solicitudes: SolicitudActiva[] = [];
+        let solicitudes: SolicitudActivaDTO[] = [];
         for (let row of response.rows) {
-            let solicitud: SolicitudActiva = new SolicitudActiva();
+            let solicitud: SolicitudActivaDTO = new SolicitudActivaDTO();
             solicitud.id = row.solicitud_id;
             solicitud.title = row.solicitud_titulo;
             solicitud.description = row.solicitud_descripcion;
@@ -174,11 +174,31 @@ export class SolicitudesService implements ISolicitudesService {
         return solicitud;
     }
 
-    public async updSolicitud(id: number, data: SolicitudDTO): Promise<any> {
+    public async updSolicitud(id: number, data: SolicitudCreacionDTO): Promise<any> {
         // Se prepara la consulta
-        // Falta opiniones | como trabajar con el estado
-        let query = this._queryBuilder.update(Solicitud, ['localizacion', 'fecha_creacion', 'id_creador', 'id_acepta', 'titulo', 'descripcion', 'estado'],
-            [data.location, data.timeStart, data.requesterId, data.providerId, data.title, data.description, data.status?.toString]);
+        let queryA = this._queryBuilder.select(Solicitud, ['id_creador', 'estado']);
+        queryA = queryA.where(equal(prop('Solicitud', 'id'), cons(id)));
+
+        // Se ejecuta la consulta
+        let responseA = await this._database.query(queryA.build());
+
+        // Se verifica la respuesta
+        if (responseA.rowCount == 0)
+            throw new Error("Solicitud no encontrada");
+        if (responseA.rowCount > 1)
+            throw new Error("Error de integridad de datos");
+
+        // Se verifica que la solicitud este abierta o activa
+        let record = responseA.rows[0];
+        if (record.solicitud_estado != 'activa' && record.solicitud_estado != 'abierta')
+            throw new Error("La solicitud no esta abierta");
+        
+        // Se verifica que el usuario sea el creador de la solicitud
+        if (record.solicitud_id_creador != data.requesterId)
+            throw new Error("El usuario no es el creador de la solicitud");
+
+        // Se prepara la consulta
+        let query = this._queryBuilder.update(Solicitud, ['localizacion', 'titulo', 'descripcion'], [data.location, data.title, data.description]);
         query = query.where(equal(prop('Solicitud', 'id'), cons(id)));
 
         // Se ejecuta la consulta
@@ -189,7 +209,7 @@ export class SolicitudesService implements ISolicitudesService {
             throw new Error("No se pudo actualizar la solicitud");
     }
 
-    public async insSolicitud(data: SolicitudCreacion): Promise<any> {
+    public async insSolicitud(data: SolicitudCreacionDTO): Promise<any> {
         // Se prepara la consulta
         let queries: Query[] = [];
         let queryA: InsertQuery = this._queryBuilder.insert(Solicitud, ['localizacion', 'fecha_creacion', 'id_creador', 'titulo', 'descripcion', 'estado', 'cerrado_creador', 'cerrado_acepta']);
@@ -209,22 +229,37 @@ export class SolicitudesService implements ISolicitudesService {
             throw new Error("No se pudo agregar la solicitud");
     }
 
-    public async updSolicitudAceptar(data: SolicitudAceptacion): Promise<any> {
+    public async updSolicitudAceptar(data: SolicitudAceptacionDTO): Promise<any> {
+        // Se prepara la consulta
+        let queryA = this._queryBuilder.select(Solicitud, ['id_creador', 'estado']);
+        queryA = queryA.where(equal(prop('Solicitud', 'id'), cons(data.solicitudId)));
+
+        // Se ejecuta la consulta
+        let response = await this._database.query(queryA.build());
+        
+        // Se verifica la respuesta
+        if (response.rowCount == 0)
+            throw new Error("Solicitud no encontrada"); 
+        if (response.rows[0].solicitud_estado != 'abierta') 
+            throw new Error("La solicitud ya no se encuentra disponible");
+        if (response.rows[0].solicitud_id_creador == data.providerId)
+            throw new Error("No puedes aceptar tu propia solicitud");
+
         // Se prepara la consulta
         let query = this._queryBuilder.update(Solicitud, ['id_acepta', 'estado'], [data.providerId, 'activa']);
         query = query.where(equal(prop('Solicitud', 'id'), cons(data.solicitudId)));
 
         // Se ejecuta la consulta
-        let response = await this._database.query(query.build());
+        response = await this._database.query(query.build());
 
         // Se verifica la respuesta
         if (response.rowCount == 0)
             throw new Error("No se pudo actualizar la solicitud");
     }
 
-    public async updSolicitudFinalizar(data: SolicitudFinalizacion): Promise<any> {
+    public async updSolicitudFinalizar(data: SolicitudFinalizacionDTO): Promise<any> {
         // Se prepara la consulta
-        let queryA = this._queryBuilder.select(Solicitud, ['id_creador', 'id_acepta', 'cerrado_creador', 'cerrado_acepta']);
+        let queryA = this._queryBuilder.select(Solicitud, ['id_creador', 'id_acepta', 'cerrado_creador', 'cerrado_acepta', 'estado']);
         queryA = queryA.where(equal(prop('Solicitud', 'id'), cons(data.requestId)));
 
         // Se ejecuta la consulta
@@ -235,17 +270,27 @@ export class SolicitudesService implements ISolicitudesService {
             throw new Error("No se pudo actualizar la solicitud");
             
         let solicitud = response.rows[0];
+        if ((solicitud.solicitud_cerrado_acepta || solicitud.solicitud_id_acepta !== null ) && solicitud.solicitud_cerrado_creador)
+            throw new Error("No se pudo actualizar la solicitud");
         
         let suffix: string = "";
         let estado: EstadoSolicitud = EstadoSolicitud.Activa;
-        if (solicitud.id_creador == data.userId) {
+        if (solicitud.solicitud_id_creador == data.userId) {
+            if (solicitud.solicitud_cerrado_creador)
+                throw new Error("No se pudo actualizar la solicitud");
             suffix = "_creador";
-            if (solicitud.cerrado_acepta)
+            if (solicitud.solicitud_cerrado_acepta)
                 estado = data.status == solicitud.solicitud_estado ? data.status! : EstadoSolicitud.Disputado;
-        } else if (solicitud.id_acepta == data.userId) {
+            else
+                estado = data.status!;
+        } else if (solicitud.solicitud_id_acepta == data.userId) {
+            if (solicitud.solicitud_cerrado_acepta)
+                throw new Error("No se pudo actualizar la solicitud");
             suffix = "_acepta";
-            if (solicitud.cerrado_creador)
+            if (solicitud.solicitud_cerrado_creador)
                 estado = data.status == solicitud.solicitud_estado ? data.status! : EstadoSolicitud.Disputado;
+            else
+                estado = data.status!;
         } else {
             throw new Error("No se pudo actualizar la solicitud");
         }
@@ -261,40 +306,29 @@ export class SolicitudesService implements ISolicitudesService {
             throw new Error("No se pudo actualizar la solicitud");
     }
 
-    public async getSolicitudChat(id: number): Promise<Chat> {
+    public async getSolicitudChat(id: number, activeUserId: number): Promise<ChatDTO> {
         // Se prepara la consulta
-        let query = this._queryBuilder.select(Mensaje, ['id', 'marca', 'contenido', 'eliminado', 'id_emisor']);
-        query = query.join(Usuario, 'U', equal(prop('U', 'id'), prop('Mensaje', 'id_emisor')), ['nombres', 'apellidos']);
-        query = query.where(equal(prop('Mensaje', 'solicitud_id'), cons(id)));
+        let query = this._queryBuilder.select(Solicitud, ['titulo', 'estado', 'id_creador', 'id_acepta']);
+        query = query.join(Usuario, 'UC', equal(prop('UC', 'id'), prop('Solicitud', 'id_creador')), ['nombres', 'apellidos']);
+        query = query.join(Usuario, 'UA', equal(prop('UA', 'id'), prop('Solicitud', 'id_acepta')), ['nombres', 'apellidos']);
+        query = query.where(equal(prop('Solicitud', 'id'), cons(id)));
        
         // Se ejecuta la consulta
         let result = await this._database.query(query.build());
 
-        // Convertir la respuesta a Mensaje
-        let mensajes: MensajeDTO[] = []; 
-        for (let i = 0; i < result.rowCount; i++) {
-            let mensaje: MensajeDTO = new MensajeDTO();
-            mensaje.id = result.rows[i].mensaje_id;
-            mensaje.timeStamp = result.rows[i].mensaje_marca;
-            mensaje.contents = result.rows[i].mensaje_contenido;
-            mensaje.deleted = result.rows[i].mensaje_eliminado;
-            mensaje.requestId = id;
-            mensaje.senderId = result.rows[i].mensaje_id_emisor;
-            mensaje.senderName = result.rows[i].u_nombres;
-            mensaje.senderLastName = result.rows[i].u_apellidos
-            mensajes.push(mensaje);
-        }
+        // Se verifica la respuesta
+        if (result.rowCount != 1)
+            throw new Error("No se pudo obtener la solicitud");
 
-        query = this._queryBuilder.select(Solicitud, ['titulo', 'estado', 'id_creador', 'id_acepta']);
-        query = query.join(Usuario, 'UC', equal(prop('UC', 'id'), prop('S', 'id_creador')), ['nombres', 'apellidos']);
-        query = query.join(Usuario, 'UA', equal(prop('UA', 'id'), prop('S', 'id_acepta')), ['nombres', 'apellidos']);
-        query = query.where(equal(prop('solicitud_id', 'id'), cons(id)));
-       
-        // Se ejecuta la consulta
-        result = await this._database.query(query.build());
-
-        let chat: Chat = new Chat();
+        // Reglas de negocio
+        let solicitud = result.rows[0];
+        if (solicitud.solicitud_estado != EstadoSolicitud.Activa)
+            throw new Error("La solicitud no se encuentra activa");
+        if (solicitud.solicitud_id_creador != activeUserId && solicitud.solicitud_id_acepta != activeUserId)
+            throw new Error("El usuario no tiene permisos para acceder a la solicitud");
         
+        // Se crea el chat
+        let chat: ChatDTO = new ChatDTO();       
         chat.requestId = id;
         chat.requestTitle = result.rows[0].solicitud_titulo;
         chat.requestStatus = result.rows[0].solicitud_estado;
@@ -304,34 +338,97 @@ export class SolicitudesService implements ISolicitudesService {
         chat.providerId = result.rows[0].solicitud_id_acepta;
         chat.providerName = result.rows[0].ua_nombres;
         chat.providerLastName = result.rows[0].ua_apellidos;
-        chat.messages = mensajes;
+
+        // Se prepara la consulta
+        query = this._queryBuilder.select(Mensaje, ['id', 'marca', 'contenido', 'eliminado', 'id_emisor']);
+        query = query.join(Usuario, 'U', equal(prop('U', 'id'), prop('Mensaje', 'id_emisor')), ['nombres', 'apellidos']);
+        query = query.where(equal(prop('Mensaje', 'solicitud_id'), cons(id)));
+       
+        // Se ejecuta la consulta
+        result = await this._database.query(query.build());
+
+        // Convertir la respuesta a Mensaje
+        let mensajes: MensajeDTO[] = []; 
+        for (let i = 0; i < result.rowCount; i++) {
+            let mensaje: MensajeDTO = new MensajeDTO();
+            mensaje.messageId = result.rows[i].mensaje_id;
+            mensaje.timeStamp = new Date(result.rows[i].mensaje_marca);
+            mensaje.contents = result.rows[i].mensaje_eliminado ? '~Eliminado~' : result.rows[i].mensaje_contenido;
+            mensaje.deleted = result.rows[i].mensaje_eliminado;
+            mensaje.requestId = id;
+            mensaje.senderId = result.rows[i].mensaje_id_emisor;
+            mensaje.senderName = result.rows[i].u_nombres;
+            mensaje.senderLastName = result.rows[i].u_apellidos
+            mensajes.push(mensaje);
+        }
+        chat.messages = mensajes.sort((a, b) => a.timeStamp.getTime() - b.timeStamp.getTime());
 
         return chat;
     }
     
-    public async insSolicitudChatMensaje(id: number, data: string, userId: number): Promise<any> {        
+    public async insSolicitudChatMensaje(id: number, data: string, userId: number): Promise<any> {
+        // Se prepara la consulta
+        let queryA = this._queryBuilder.select(Solicitud, ['id_creador', 'id_acepta', 'estado']);
+        queryA = queryA.where(equal(prop('Solicitud', 'id'), cons(id)));
+
+        // Se ejecuta la consulta
+        let response = await this._database.query(queryA.build());
+
+        // Se verifica la respuesta
+        if (response.rowCount != 1)
+            throw new Error("No se pudo actualizar la solicitud");
+
+        // Reglas de negocio
+        let solicitud = response.rows[0];
+        if (solicitud.solicitud_id_creador != userId && solicitud.solicitud_id_acepta != userId)
+            throw new Error("No se pudo actualizar la solicitud");
+        if (solicitud.solicitud_estado != EstadoSolicitud.Activa)
+            throw new Error("La solicitud no se encuentra activa");
+
         // Se prepara la consulta
         let query = this._queryBuilder.insert(Mensaje, ['solicitud_id', 'contenido', 'marca', 'eliminado', 'id_emisor']);
         query = query.values([id, data, new Date(), false, userId]);
         
         // Se ejecuta la consulta
-        const response = await this._database.query(query.build());
+        response = await this._database.query(query.build());
 
         return response;
     }
     
-    public async dltSolicitudChatMensaje(id: number): Promise<any> {
-        let query = this._queryBuilder.update(Mensaje, ['borrado'], [true]);
+    public async dltSolicitudChatMensaje(activeUserId: number, id: number): Promise<any> {
+        // Se prepara la consulta
+        let queryA = this._queryBuilder.select(Mensaje, ['id_emisor']);
+        queryA = queryA.join(Solicitud, 'S', equal(prop('S', 'id'), prop('Mensaje', 'solicitud_id')), ['estado']);
+        queryA = queryA.where(equal(prop('Mensaje', 'id'), cons(id)));
+
+        // Se ejecuta la consulta
+        let response = await this._database.query(queryA.build());
+
+        // Se verifica la respuesta 
+        if (response.rowCount != 1)
+            throw new Error("No se pudo actualizar la solicitud");
+
+        // Reglas de negocio
+        let mensaje = response.rows[0];
+        if (mensaje.mensaje_id_emisor != activeUserId)
+            throw new Error("No se pudo actualizar la solicitud");
+        if (mensaje.mensaje_eliminado)
+            throw new Error("El mensaje ya se encuentra eliminado");
+        if (mensaje.s_estado != EstadoSolicitud.Activa)
+            throw new Error("La solicitud no se encuentra activa");
+
+        // Se prepara la consulta
+        let query = this._queryBuilder.update(Mensaje, ['eliminado'], [true]);
         query = query.where(equal(prop('Mensaje', 'id'), cons(id)));
 
         // Se ejecuta la consulta
-        const response = await this._database.query(query.build());
+        response = await this._database.query(query.build());
 
         return response;
     }
 
 
-    private async sortSolicitudesRelevantesByCoefficient(currentUserId: number, solicitudes: SolicitudRelevante[]): Promise<SolicitudRelevante[]> {
+    private async sortSolicitudesRelevantesByCoefficient(currentUserId: number, solicitudes: SolicitudRelevanteDTO[]): Promise<SolicitudRelevanteDTO[]> {
         // Preparar consulta
         let query = this._queryBuilder.select(UsuarioConectadoUsuarioDTO, ['id_usuario1', 'id_usuario2']);
 
@@ -359,7 +456,7 @@ export class SolicitudesService implements ISolicitudesService {
 
         // Filtrar conexiones del usuario actual
         const currentConnections: number[] = connections.get(currentUserId) || [];
-        const filteredSolicitudes: SolicitudRelevante[] = solicitudes.filter(solicitud => !currentConnections.includes(solicitud.requesterId));
+        const filteredSolicitudes: SolicitudRelevanteDTO[] = solicitudes.filter(solicitud => !currentConnections.includes(solicitud.requesterId));
 
         const orderedSolicitudes: IOrderedRequests[] = filteredSolicitudes.map(solicitud => { return { solicitud: solicitud, coefficient: 0 } });
         for (const solicitud of orderedSolicitudes) {
@@ -381,7 +478,7 @@ export class SolicitudesService implements ISolicitudesService {
 
         interface IOrderedRequests {
             coefficient: number;
-            solicitud: SolicitudRelevante;
+            solicitud: SolicitudRelevanteDTO;
         }
     }
 }

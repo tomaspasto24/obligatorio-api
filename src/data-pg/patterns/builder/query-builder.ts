@@ -170,7 +170,7 @@ export class PGPredicateParser extends PredicateParser{
                     break;
                 case 'object':
                     if (expression.value instanceof Date)
-                        this._query += `TO_DATE('${expression.value.getFullYear()}-${expression.value.getMonth() + 1}-${expression.value.getDate()}', 'YYYY-MM-DD')`;
+                        this._query += `TO_TIMESTAMP('${expression.value.getFullYear()}-${expression.value.getMonth() + 1}-${expression.value.getDate()} ${expression.value.getHours()}:${expression.value.getMinutes()}:${expression.value.getSeconds()}', 'YYYY-MM-DD HH24:MI:SS')`;
                     else if (expression.value instanceof Array)
                         this._query += `(${expression.value.map(v => `'${v}'`).join(', ')})`;
                     else

@@ -273,55 +273,6 @@ export const putSolicitudAceptar = {
     }
 };
 
-export const putSolicitudRechazar = {
-    tags: ['Solicitudes'],
-    description: "Rechaza una solicitud registrada en el sistema.",
-    operationId: 'putSolicitudRechazar',
-    security: [
-        {
-            "bearerAuth": []
-        }
-    ],
-    requestBody: {
-        content: {
-            "application/json": {
-                schema: {
-                    type: "object",
-                    properties: {
-                        solicitudId: {
-                            type: "number",
-                            description: "Identificador de la solicitud."
-                        },
-                        providerId: {
-                            type: "number",
-                            description: "Identificador del ayudante."
-                        }
-                    }
-                }
-            }
-        }
-    },
-    parameters: [
-        {
-            name: "id",
-            in: "path",
-            description: "Identificador de la solicitud.",
-            required: true,
-            schema: {
-                type: "number"
-            }
-        }
-    ],
-    responses: {
-        "200": {
-            description: "Solicitud rechazada exitosamente.",
-        },
-        '500': {
-            description: "Error al rechazar la solicitud."
-        }
-    }
-};
-
 export const getSolicitudChat = {
     tags: ['Solicitudes'],
     description: "Obtiene el chat de una solicitud registrada en el sistema.",
