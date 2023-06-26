@@ -109,7 +109,6 @@ export class UsuariosService implements IUsuariosService {
         usuario.nick = response.rows[0].usuario_nick;
         usuario.name = response.rows[0].usuario_nombres;
         usuario.lastName = response.rows[0].usuario_apellidos;
-        usuario.birthDate = new Date(response.rows[0].usuario_nacimiento);
 
         // Retornar DTO
         return usuario;

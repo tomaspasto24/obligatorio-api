@@ -38,7 +38,7 @@ export class UsuariosController {
     static readonly getUsuarioById = async (req: any, res: any) => {
         try {
             let usuariosService: IUsuariosService = DBServiceFactory.instance.getUsuariosService();
-            const usuario: UsuarioDTO = await usuariosService.getUsuarioById(req.params.id);
+            const usuario: UsuarioDTO = await usuariosService.getUsuarioById(Number(req.params.id));
 
             return res.status(200).json(usuario);
         }
@@ -107,12 +107,17 @@ export class UsuariosController {
     static readonly dltUsuarioHabilidades = async (req: any, res: any) => {
         try {
             const userId = Number(req.params.id);
+            const skillId = Number(req.params.sId);
             const activeUser = req.body.userId;
-            const body: UsuarioHabilidadAccionDTO = UsuarioHabilidadAccionDTO.fromJson((req.body as IRequestWrapper).body);
+            const body: UsuarioHabilidadAccionDTO = new UsuarioHabilidadAccionDTO();
+            body.userId = userId;
+            body.skillId = skillId;
 
             if (body.userId !== activeUser || body.userId !== userId)
                 return res.status(401).json({ message: 'Unauthorized' });
             if (userId < 1 || body.habilidadId < 1)
+                return res.status(400).json({ message: 'Invalid request' });
+            if (skillId < 1)
                 return res.status(400).json({ message: 'Invalid request' });
 
             let usuariosService: IUsuariosService = DBServiceFactory.instance.getUsuariosService();

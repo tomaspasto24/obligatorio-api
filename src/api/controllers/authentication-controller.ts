@@ -1,16 +1,17 @@
 import { Request, Response } from "express";
-import { Login } from "../../core/dtos/login";
+import { Login as LoginDTO } from "../../core/dtos/login";
 import { Usuario as UsuarioDTO} from "../../core/dtos/usuario";
 import { IUsuariosService } from "../../core/services/iusuarios-service";
 import { DBServiceFactory } from "../../data-pg/patterns/factory/db-service-factory";
 import { IJWTTokenPayload } from "../../core/types/ijwt-token-payload";
 import { JWTHelper } from "../../core/helpers/jwt-helper";
 import { CryptoHelper } from "../../core/helpers/crypto-helper";
+import { Registro as RegistroDTO } from "../../core/dtos/registro";
 
 export class AuthenticationController {
     static readonly login = async (req: Request, res: Response) => {
         try {
-            const body: Login = Login.fromJson(req.body);
+            const body: LoginDTO = LoginDTO.fromJson(req.body);
 
             if (!body.email || !body.password) {
                 return res.status(400).json({ message: 'Invalid email or password' });
@@ -37,6 +38,18 @@ export class AuthenticationController {
     }
 
     static readonly register = async (req: any, res: any) => {
-        throw new Error('Not implemented');
+        try {
+            const body: RegistroDTO = RegistroDTO.fromJson(req.body);
+
+            body.password = CryptoHelper.hash(body.password);
+
+            let usuariosService: IUsuariosService = DBServiceFactory.instance.getUsuariosService();
+            await usuariosService.insUsuario(body);
+
+            return res.status(200).json({ message: 'Usuario registrado' });
+        }
+        catch (error: any) {
+            res.status(500).json({ message: 'Failed to insert usuario' });
+        }
     }
 }
