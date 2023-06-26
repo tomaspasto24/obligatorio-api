@@ -13,9 +13,10 @@ closedRouter.use(AuthenticationMiddleware.authenticate);
 // Los endpoints que requieren autenticación se definen en closedRouter
 // Los endpoints que no requieren autenticación se definen en openRouter
 
+
 // Endpoints de registro e inicio de sesión
-openRouter.post('/iniciar-sesion', AuthenticationController.login);
-openRouter.post('/registrar-usuario', AuthenticationController.register);
+openRouter.post('/autenticacion/ingreso', AuthenticationController.login);
+openRouter.post('/autenticacion/registro', AuthenticationController.register);
 
 
 // Endpoints de manejo de usuarios
@@ -24,7 +25,7 @@ closedRouter.post('/usuarios/search', UsuariosController.insUsuariosSearch);
 closedRouter.get('/usuarios/:id', UsuariosController.getUsuarioById);
 closedRouter.get('/usuarios/:id/habilidades', UsuariosController.getUsuarioHabilidades);
 closedRouter.post('/usuarios/:id/habilidades', UsuariosController.insUsuarioHabilidades);
-closedRouter.delete('/usuarios/:id/habilidades', UsuariosController.dltUsuarioHabilidades);
+closedRouter.delete('/usuarios/:id/habilidades/:sId', UsuariosController.dltUsuarioHabilidades);
 closedRouter.put('/usuarios/:id', UsuariosController.updUsuarioById);
 closedRouter.get('/usuarios/:id/conexiones', UsuariosController.getUsuarioConexiones);
 closedRouter.post('/usuarios/:id/conexiones', UsuariosController.insUsuarioConexiones);

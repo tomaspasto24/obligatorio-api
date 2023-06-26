@@ -1,3 +1,4 @@
+import { EstadoSolicitud } from "../types/estado-solicitud";
 import { Habilidad } from "./habilidad";
 
 export class SolicitudRelevante {
@@ -11,8 +12,8 @@ export class SolicitudRelevante {
     public requesterId: number;
     public requesterName: string;
     public requesterLastName: string;
-    public requesterProviderConnection: string;
     public skill: Habilidad | null;
+    public status: EstadoSolicitud | null;
 
     constructor() {
         this.id = 0;
@@ -23,8 +24,8 @@ export class SolicitudRelevante {
         this.requesterId = 0;
         this.requesterName = '';
         this.requesterLastName = '';
-        this.requesterProviderConnection = '';
         this.skill = null;
+        this.status = null;
     }
 
     public set(property: string, value: any): SolicitudRelevante {
