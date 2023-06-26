@@ -50,7 +50,7 @@ export class HabilidadesService implements IHabilidadesService {
         //Se ejecuta la consulta
         let result = await this._database.query(query.build());
 
-        //Se convierte la respuesta a Habilidad
+        //Se convierte la respuesta a HabilidadCategoriaDTO
         let categorias: HabilidadesCategoria[] = [];
         for (let i = 0; i < result.rowCount; i++) {
             let categoria: HabilidadesCategoria = new HabilidadesCategoria();

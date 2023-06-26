@@ -14,7 +14,6 @@ export class HabilidadesController {
         catch (error: any) {
             res.status(500).json({ message: 'Failed to get habilidades' });
         }
-
     }
 
     static readonly getHabilidadesCategorias = async (req: any, res: any) => {
@@ -30,14 +29,14 @@ export class HabilidadesController {
     }
 
     static readonly insHabilidades = async (req: any, res: any) => {
-        throw new Error('Not implemented');
+        throw new Error('Method not implemented.');
     }
 
     static readonly updHabilidades = async (req: any, res: any) => {
-        throw new Error('Not implemented');
+        throw new Error('Method not implemented.');
     }
 
     static readonly dltHabilidades = async (req: any, res: any) => {
-        throw new Error('Not implemented');
+        throw new Error('Method not implemented.');
     }
 }

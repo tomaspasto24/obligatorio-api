@@ -3,4 +3,5 @@ export enum EstadoSolicitud {
     Activa = 'activa',
     Solucionado = 'solucionado',
     Cancelado = 'cancelado',
+    Disputado = 'disputado',
 }

@@ -1,31 +1,13 @@
-import { Habilidad } from "./habilidad";
-
-export class SolicitudRelevante {
+export class MensajeCreacion {
     [key: string]: any;
 
-    public id: number;
-    public title: string;
-    public description: string;
-    public timeStart: Date;
-    public location: string;
-    public requesterId: number;
-    public requesterName: string;
-    public requesterLastName: string;
-    public skill: Habilidad | null;
+    public contents: string;
 
     constructor() {
-        this.id = 0;
-        this.title = '';
-        this.description = '';
-        this.timeStart = new Date();
-        this.location = '';
-        this.requesterId = 0;
-        this.requesterName = '';
-        this.requesterLastName = '';
-        this.skill = null;
+        this.contents = '';
     }
 
-    public set(property: string, value: any): SolicitudRelevante {
+    public set(property: string, value: any): MensajeCreacion {
         if (this.hasOwnProperty(property)) {
             try {
                 let type = typeof this[property];
@@ -42,8 +24,8 @@ export class SolicitudRelevante {
         }
     }
 
-    static fromJson(json: any): SolicitudRelevante {
-        let result = new SolicitudRelevante();
+    static fromJson(json: any): MensajeCreacion {
+        let result = new MensajeCreacion();
         for (let key in json) {
             if (json.hasOwnProperty(key)) {
                 result.set(key, json[key]);
@@ -62,7 +44,7 @@ export class SolicitudRelevante {
         return result;
     }
 
-    public clone(): SolicitudRelevante {
-        return SolicitudRelevante.fromJson(this.toJson());
+    public clone(): MensajeCreacion {
+        return MensajeCreacion.fromJson(this.toJson());
     }
 }

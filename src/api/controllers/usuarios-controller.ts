@@ -307,7 +307,7 @@ export class UsuariosController {
                 return res.status(400).json({ message: 'Invalid request' });
 
             let solicitudesService: ISolicitudesService = DBServiceFactory.instance.getSolicitudesService();
-            let solicitudes: SolicitudRelevanteDTO[] = await solicitudesService.getSolicitudesRelevantes(userId);
+            let solicitudes: SolicitudRelevanteDTO[] = await solicitudesService.getSolicitudesRelevantes(userId, 20);
 
             return res.status(200).json(solicitudes);
         }

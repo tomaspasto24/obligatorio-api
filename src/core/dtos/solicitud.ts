@@ -16,8 +16,6 @@ export class Solicitud {
     public providerId: number;
     public providerName: string;
     public providerLastName: string;
-    public requesterProviderConnection: string;
-    public activeUserRol: RolUsuario | null;
     public skill: Habilidad | null;
     public status: EstadoSolicitud | null;
 
@@ -33,8 +31,6 @@ export class Solicitud {
         this.providerId = 0;
         this.providerName = '';
         this.providerLastName = '';
-        this.requesterProviderConnection = '';
-        this.activeUserRol = null;
         this.skill = null;
         this.status = null;
     }
