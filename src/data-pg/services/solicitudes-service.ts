@@ -9,7 +9,7 @@ import { ISolicitudesService } from "../../core/services/isolicitudes-service";
 import { IQueryBuilder, InsertQuery, Query } from "../../core/patterns/builder/query-builder";
 import { IDatabase } from "../../core/database/idatabase";
 import { Database } from "../database/database";
-import { PGQueryBuilder, and, cons, equal, in_, like, or, prop } from "../patterns/builder/query-builder";
+import { PGQueryBuilder, and, cons, equal, gte, in_, like, ltn, not, or, prop } from "../patterns/builder/query-builder";
 import { Usuario } from "../../core/models/usuario";
 import { Solicitud } from "../../core/models/solicitud";
 import { SolicitudHabilidad } from "../../core/models/solicitud-habilidad";
@@ -22,6 +22,7 @@ import { Expression } from "../../core/patterns/visitor/expression-visitor";
 import { Categoria } from "../../core/models/categoria";
 import { UsuarioConectadoUsuario as UsuarioConectadoUsuarioDTO } from "../../core/models/usuario-conectado-usuario";
 import { intersection, union } from "lodash";
+import { UsuarioHabilidades } from "../../core/models/usuario-habilidades";
 
 export class SolicitudesService implements ISolicitudesService {
 
@@ -34,12 +35,16 @@ export class SolicitudesService implements ISolicitudesService {
     }
 
     public async getSolicitudesRelevantes(id: number, count: number): Promise<SolicitudRelevanteDTO[]> {
+        let cutoffDate: Date = new Date();
+        cutoffDate.setDate(cutoffDate.getDate() - 5);
+
         let query = this._queryBuilder.select(Solicitud, ['id', 'localizacion', 'fecha_creacion', 'id_creador', 'id_acepta', 'titulo', 'descripcion', 'opinion_creador', 'opinion_acepta', 'estado', 'cerrado_creador', 'cerrado_acepta']);
         query = query.join(Usuario, 'C', equal(prop('Solicitud', 'id_creador'), prop('C', 'id')), ['nombres', 'apellidos']);
         query = query.join(SolicitudHabilidad, 'SH', equal(prop('Solicitud', 'id'), prop('SH', 'id_solicitud')), ['codigo_habilidad']);
-        query = query.join(Habilidad, 'H', equal(prop('SH', 'codigo_habilidad', 'habilidad'), prop('H', 'codigo')), ['nombre', 'descripcion', 'codigo_categoria']);
+        query = query.join(Habilidad, 'H', equal(prop('SH', 'codigo_habilidad'), prop('H', 'codigo')), ['habilidad', 'descripcion', 'codigo_categoria']);
         query = query.join(Categoria, 'CAT', equal(prop('H', 'codigo_categoria'), prop('CAT', 'codigo')), ['nombre']);
-        query = query.where(equal(prop('Solicitud', 'estado'), cons(EstadoSolicitud.Abierta)));
+        query = query.join(UsuarioHabilidades, 'UH', equal(prop('UH', 'id_habilidad'), prop('H', 'codigo')), ['id_usuario']);
+        query = query.where(and(and(and(equal(prop('Solicitud', 'estado'), cons(EstadoSolicitud.Abierta)), not(equal(prop('Solicitud', 'id_creador'), cons(id)))), equal(prop('UH', 'id_usuario'), cons(id))), gte(prop('Solicitud', 'fecha_creacion'), cons(cutoffDate))));
         
         let response = await this._database.query(query.build());
         
@@ -55,18 +60,17 @@ export class SolicitudesService implements ISolicitudesService {
             solicitud.requesterName = row.c_nombres;
             solicitud.requesterLastName = row.c_apellidos;
             solicitud.skill = new HabilidadDTO()
-                .set('id', row.h_codigo)
-                .set('name', row.h_nombre)
+                .set('id', row.sh_codigo_habilidad)
+                .set('name', row.h_habilidad)
                 .set('description', row.h_descripcion)
                 .set('categoryId', row.h_codigo_categoria)
                 .set('categoryName', row.cat_nombre);
+            solicitud.status = row.solicitud_estado;
             solicitudes.push(solicitud);
         }
 
         // Ordenar usuarios por coeficiente
-        solicitudes = solicitudes.filter(s => s.requesterId != id);
         solicitudes = await this.sortSolicitudesRelevantesByCoefficient(id, solicitudes);
-        solicitudes = solicitudes.filter((s: SolicitudRelevanteDTO) => (new Date()).getTime() - s.timeStart.getTime() < 86400000);
         // TODO: Filtrar solicitudes por localizacion
         solicitudes = solicitudes.slice(0, count);
 
@@ -78,12 +82,15 @@ export class SolicitudesService implements ISolicitudesService {
         query = query.join(Usuario, 'C', equal(prop('Solicitud', 'id_creador'), prop('C', 'id')), ['nombres', 'apellidos']);
         query = query.join(Usuario, 'A', equal(prop('Solicitud', 'id_acepta'), prop('A', 'id')), ['nombres', 'apellidos']);
         query = query.join(SolicitudHabilidad, 'SH', equal(prop('Solicitud', 'id'), prop('SH', 'id_solicitud')), ['codigo_habilidad']);
-        query = query.join(Habilidad, 'H', equal(prop('SH', 'codigo_habilidad', 'habilidad'), prop('H', 'codigo')), ['nombre', 'descripcion', 'codigo_categoria']);
+        query = query.join(Habilidad, 'H', equal(prop('SH', 'codigo_habilidad'), prop('H', 'codigo')), ['habilidad', 'descripcion', 'codigo_categoria']);
         query = query.join(Categoria, 'CAT', equal(prop('H', 'codigo_categoria'), prop('CAT', 'codigo')), ['nombre']);
 
         let exp: Expression = or(equal(prop('Solicitud', 'cerrado_creador'), cons(false)), equal(prop('Solicitud', 'cerrado_acepta'), cons(false)));
         exp = and(exp, in_(prop('Solicitud', 'estado'), cons([EstadoSolicitud.Solucionado, EstadoSolicitud.Cancelado])));
-        exp = and(exp, equal(prop('Solicitud', 'estado'), cons(EstadoSolicitud.Activa)));
+        exp = or(exp, equal(prop('Solicitud', 'estado'), cons(EstadoSolicitud.Activa)));
+        let exp2: Expression = and(equal(prop('Solicitud', 'id_creador'), cons(id)), equal(prop('Solicitud', 'cerrado_creador'), cons(false)));
+        exp2 = or(exp2, and(equal(prop('Solicitud', 'id_acepta'), cons(id)), equal(prop('Solicitud', 'cerrado_acepta'), cons(false))));
+        exp = and(exp, exp2);
 
         query = query.where(exp);
 
@@ -104,8 +111,8 @@ export class SolicitudesService implements ISolicitudesService {
             solicitud.providerName = row.a_nombres;
             solicitud.providerLastName = row.a_apellidos;
             solicitud.skill = new HabilidadDTO()
-                .set('id', row.h_codigo)
-                .set('name', row.h_nombre)
+                .set('id', row.sh_codigo_habilidad)
+                .set('name', row.h_habilidad)
                 .set('description', row.h_descripcion)
                 .set('categoryId', row.h_codigo_categoria)
                 .set('categoryName', row.cat_nombre);
@@ -454,14 +461,20 @@ export class SolicitudesService implements ISolicitudesService {
             connections.get(user2)!.push(user1);
         }
 
-        // Filtrar conexiones del usuario actual
-        const currentConnections: number[] = connections.get(currentUserId) || [];
-        const filteredSolicitudes: SolicitudRelevanteDTO[] = solicitudes.filter(solicitud => !currentConnections.includes(solicitud.requesterId));
-
-        const orderedSolicitudes: IOrderedRequests[] = filteredSolicitudes.map(solicitud => { return { solicitud: solicitud, coefficient: 0 } });
+        const orderedSolicitudes: IOrderedRequests[] = solicitudes.map(solicitud => { return { solicitud: solicitud, coefficient: 0 } });
         for (const solicitud of orderedSolicitudes) {
             const user1Connections: number[] = connections.get(currentUserId) || [];
-            const user2Connections: number[] = connections.get(solicitud.solicitud.id) || [];
+            const user2Connections: number[] = connections.get(solicitud.solicitud.requesterId) || [];
+
+            if (user1Connections.length == 0 || user2Connections.length == 0) {
+                solicitud.coefficient = 0;
+                continue;
+            }
+
+            if (user1Connections.includes(solicitud.solicitud.requesterId)) {
+                solicitud.coefficient = 2;
+                continue;
+            }
 
             const commonConnections: number[] = intersection(user1Connections, user2Connections);
             const totalConnections: number[] = union(user1Connections, user2Connections);
