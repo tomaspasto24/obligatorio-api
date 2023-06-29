@@ -1,4 +1,4 @@
-import { sign, SignOptions, verify, VerifyOptions } from 'jsonwebtoken';
+import { JwtPayload, sign, SignOptions, verify, VerifyOptions } from 'jsonwebtoken';
 import * as fs from 'fs';
 import * as path from 'path';
 import { IJWTTokenPayload } from '../types/ijwt-token-payload';
@@ -77,6 +77,26 @@ export class JWTHelper {
         }
         catch (err) {
             return true;
+        }
+    }
+
+    static getPayload(token: string): any {
+        const publicKey = fs.readFileSync(path.join(__dirname, './../../../public.key'), 'utf8');
+        const publicKeyI: PublicKeyInput = {
+            key: publicKey,
+        };
+        const publicKeyO = createPublicKey(publicKeyI);
+
+        const verifyOptions: VerifyOptions = {
+            algorithms: ['RS256'],
+        };
+
+        try {
+            const payload: any = verify(token, publicKeyO, verifyOptions);
+            return payload;
+        }
+        catch (err) {
+            throw Error('Invalid token');
         }
     }
 }

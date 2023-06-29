@@ -16,6 +16,7 @@ closedRouter.use(AuthenticationMiddleware.authenticate);
 // Endpoints de registro e inicio de sesión
 openRouter.post('/autenticacion/ingreso', AuthenticationController.login);
 openRouter.post('/autenticacion/registro', AuthenticationController.register);
+openRouter.post('/autenticacion', AuthenticationController.getPayloadByToken);
 
 // Endpoints de manejo de usuarios
 openRouter.post('/usuarios', UsuariosController.insUsuario);

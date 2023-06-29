@@ -33,7 +33,7 @@ export class AuthenticationController {
             return res.status(200).json({ accessToken: accessToken });
         }
         catch (error: any) {
-            res.status(500).json({ message: 'Failed to authenticate user' });
+            return res.status(400).json({ message: 'Invalid email or password' });
         }
     }
 
@@ -50,6 +50,17 @@ export class AuthenticationController {
         }
         catch (error: any) {
             res.status(500).json({ message: 'Failed to insert usuario' });
+        }
+    }
+
+    static readonly getPayloadByToken = async (req: any, res: any) => {
+        try {
+            const token: string = req.headers.authorization.split(' ')[1];
+            const payload    = JWTHelper.getPayload(token);
+            return res.status(200).json(payload);
+        }
+        catch (error: any) {
+            return res.status(400).json({ message: 'Invalid token' });
         }
     }
 }

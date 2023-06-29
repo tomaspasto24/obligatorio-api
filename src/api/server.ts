@@ -10,7 +10,7 @@ const corsOrigin = process.env.API_CORS_ORIGIN || 'http://localhost:4200';
 
 const app = express();
 const corsOptions = {
-    origin: corsOrigin,
+    'Access-Control-Allow-Origin' : '*',
     optionsSuccessStatus: 200,
     methods: "GET,PUT,POST,DELETE",
 }
