@@ -305,18 +305,19 @@ export class UsuariosController {
         try {
             const userId = Number(req.params.id);
             const activeUser = req.body.userId;
-            
+
             if (userId !== activeUser)
                 return res.status(401).json({ message: 'Unauthorized' });
             if (userId < 1)
                 return res.status(400).json({ message: 'Invalid request' });
 
+
             let solicitudesService: ISolicitudesService = DBServiceFactory.instance.getSolicitudesService();
             let solicitudes: SolicitudRelevanteDTO[] = await solicitudesService.getSolicitudesRelevantes(userId, 20);
-
             return res.status(200).json(solicitudes);
         }
         catch (error: any) {
+            console.log(error)
             res.status(500).json({ message: 'Failed to get usuario solicitudes relevantes' });
         }
     }
@@ -325,7 +326,7 @@ export class UsuariosController {
         try {
             const userId = Number(req.params.id);
             const activeUser = req.body.userId;
-            
+
             if (userId !== activeUser)
                 return res.status(401).json({ message: 'Unauthorized' });
             if (userId < 1)

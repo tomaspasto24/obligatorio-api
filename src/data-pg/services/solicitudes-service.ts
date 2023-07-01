@@ -34,43 +34,42 @@ export class SolicitudesService implements ISolicitudesService {
     }
 
     public async getSolicitudesRelevantes(id: number, count: number): Promise<SolicitudRelevanteDTO[]> {
-        let query = this._queryBuilder.select(Solicitud, ['id', 'localizacion', 'fecha_creacion', 'id_creador', 'id_acepta', 'titulo', 'descripcion', 'opinion_creador', 'opinion_acepta', 'estado', 'cerrado_creador', 'cerrado_acepta']);
-        query = query.join(Usuario, 'C', equal(prop('Solicitud', 'id_creador'), prop('C', 'id')), ['nombres', 'apellidos']);
-        query = query.join(SolicitudHabilidad, 'SH', equal(prop('Solicitud', 'id'), prop('SH', 'id_solicitud')), ['codigo_habilidad']);
-        query = query.join(Habilidad, 'H', equal(prop('SH', 'codigo_habilidad', 'habilidad'), prop('H', 'codigo')), ['nombre', 'descripcion', 'codigo_categoria']);
-        query = query.join(Categoria, 'CAT', equal(prop('H', 'codigo_categoria'), prop('CAT', 'codigo')), ['nombre']);
-        query = query.where(equal(prop('Solicitud', 'estado'), cons(EstadoSolicitud.Abierta)));
-        
-        let response = await this._database.query(query.build());
-        
-        let solicitudes: SolicitudRelevanteDTO[] = [];
-        for (let row of response.rows) {
-            let solicitud: SolicitudRelevanteDTO = new SolicitudRelevanteDTO();
-            solicitud.id = row.solicitud_id;
-            solicitud.title = row.solicitud_titulo;
-            solicitud.description = row.solicitud_descripcion;
-            solicitud.timeStart = row.solicitud_fecha_creacion;
-            solicitud.location = row.solicitud_localizacion;
-            solicitud.requesterId = row.solicitud_id_creador;
-            solicitud.requesterName = row.c_nombres;
-            solicitud.requesterLastName = row.c_apellidos;
-            solicitud.skill = new HabilidadDTO()
-                .set('id', row.h_codigo)
-                .set('name', row.h_nombre)
-                .set('description', row.h_descripcion)
-                .set('categoryId', row.h_codigo_categoria)
-                .set('categoryName', row.cat_nombre);
-            solicitudes.push(solicitud);
-        }
-
-        // Ordenar usuarios por coeficiente
-        solicitudes = solicitudes.filter(s => s.requesterId != id);
-        solicitudes = await this.sortSolicitudesRelevantesByCoefficient(id, solicitudes);
-        solicitudes = solicitudes.filter((s: SolicitudRelevanteDTO) => (new Date()).getTime() - s.timeStart.getTime() < 86400000);
-        // TODO: Filtrar solicitudes por localizacion
-        solicitudes = solicitudes.slice(0, count);
-
-        return solicitudes;
+            let query = this._queryBuilder.select(Solicitud, ['id', 'localizacion', 'fecha_creacion', 'id_creador', 'id_acepta', 'titulo', 'descripcion', 'opinion_creador', 'opinion_acepta', 'estado', 'cerrado_creador', 'cerrado_acepta']);
+            query = query.join(Usuario, 'C', equal(prop('Solicitud', 'id_creador'), prop('C', 'id')), ['nombres', 'apellidos']);
+            query = query.join(SolicitudHabilidad, 'SH', equal(prop('Solicitud', 'id'), prop('SH', 'id_solicitud')), ['codigo_habilidad']);
+            query = query.join(Habilidad, 'H', equal(prop('SH', 'codigo_habilidad', 'habilidad'), prop('H', 'codigo')), ['nombre', 'descripcion', 'codigo_categoria']);
+            query = query.join(Categoria, 'CAT', equal(prop('H', 'codigo_categoria'), prop('CAT', 'codigo')), ['nombre']);
+            query = query.where(equal(prop('Solicitud', 'estado'), cons(EstadoSolicitud.Abierta)));
+            let response = await this._database.query(query.build());
+            
+            let solicitudes: SolicitudRelevanteDTO[] = [];
+            for (let row of response.rows) {
+                let solicitud: SolicitudRelevanteDTO = new SolicitudRelevanteDTO();
+                solicitud.id = row.solicitud_id;
+                solicitud.title = row.solicitud_titulo;
+                solicitud.description = row.solicitud_descripcion;
+                solicitud.timeStart = row.solicitud_fecha_creacion;
+                solicitud.location = row.solicitud_localizacion;
+                solicitud.requesterId = row.solicitud_id_creador;
+                solicitud.requesterName = row.c_nombres;
+                solicitud.requesterLastName = row.c_apellidos;
+                solicitud.skill = new HabilidadDTO()
+                    .set('id', row.h_codigo)
+                    .set('name', row.h_nombre)
+                    .set('description', row.h_descripcion)
+                    .set('categoryId', row.h_codigo_categoria)
+                    .set('categoryName', row.cat_nombre);
+                solicitudes.push(solicitud);
+            }
+    
+            // Ordenar usuarios por coeficiente
+            solicitudes = solicitudes.filter(s => s.requesterId != id);
+            solicitudes = await this.sortSolicitudesRelevantesByCoefficient(id, solicitudes);
+            solicitudes = solicitudes.filter((s: SolicitudRelevanteDTO) => (new Date()).getTime() - s.timeStart.getTime() < 86400000);
+            // TODO: Filtrar solicitudes por localizacion
+            solicitudes = solicitudes.slice(0, count);
+    
+            return solicitudes;
     }
     
     public async getSolicitudesActivas(id: number): Promise<SolicitudActivaDTO[]> {

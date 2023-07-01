@@ -56,8 +56,11 @@ export class AuthenticationController {
     static readonly getPayloadByToken = async (req: any, res: any) => {
         try {
             const token: string = req.headers.authorization.split(' ')[1];
-            const payload    = JWTHelper.getPayload(token);
-            return res.status(200).json(payload);
+            const { userId }    = JWTHelper.getPayload(token);
+            const usuariosService: IUsuariosService = DBServiceFactory.instance.getUsuariosService();
+            const usuario: UsuarioDTO = await usuariosService.getUsuarioById(userId);
+            console.log(usuario)
+            return res.status(200).json(usuario);
         }
         catch (error: any) {
             return res.status(400).json({ message: 'Invalid token' });
