@@ -163,8 +163,8 @@ export class UsuariosController {
 
             let usuariosService: IUsuariosService = DBServiceFactory.instance.getUsuariosService();
             const conexiones: ConexionDTO[] = await usuariosService.getUsuarioConexiones(userId);
-
-            return res.status(200).json(conexiones);
+            // console.log(conexiones);
+            return res.status(200).json(conexiones);    
         }
         catch (error: any) {
             res.status(500).json({ message: 'Failed to get usuario conexiones' });
