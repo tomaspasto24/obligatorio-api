@@ -3,6 +3,9 @@ import { deleteHabilidad, getHabilidades, getHabilidadesCategorias, postHabilida
 import { deleteSolicitudChatMensaje, getSolicitud, getSolicitudChat, postSolicitud, postSolicitudChatMensaje, putSolicitud, putSolicitudAceptar, putSolicitudFinalizar } from "./solicitudes";
 import { deleteUserConnection, deleteUserSkill, getUser, getUserConnections, getUserRequestsActive, getUserRequestsRelevant, getUserSkills, postUser, postUserConnection, postUserPassword, postUserSearch, postUserSkill, putUser, putUserConnection, putUserPassword } from "./usuarios";
 
+const host = process.env.API_HOSTNAME || 'localhost';
+const port = Number(process.env.API_PORT || 3001);
+
 export const documentation = {
     openapi: '3.0.3',
     info: {
@@ -18,7 +21,7 @@ export const documentation = {
     },
     servers: [
         {
-            url: 'http://localhost:3001',
+            url: `http://${host}:${port}/api`,
             description: 'Local server',
         },
     ],

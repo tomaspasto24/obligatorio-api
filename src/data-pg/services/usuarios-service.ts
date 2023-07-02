@@ -265,7 +265,7 @@ export class UsuariosService implements IUsuariosService {
             conexion.nick = response.rows[i].usuarioconectadousuario_id_usuario1 == id ? response.rows[i].u2_nick : response.rows[i].u1_nick;
             conexion.name = response.rows[i].usuarioconectadousuario_id_usuario1 == id ? response.rows[i].u2_nombres : response.rows[i].u1_nombres;
             conexion.lastName = response.rows[i].usuarioconectadousuario_id_usuario1 == id ? response.rows[i].u2_apellidos : response.rows[i].u1_apellidos;
-            conexion.accepted = response.rows[i].aceptada;
+            conexion.aceptada = response.rows[i].usuarioconectadousuario_id_aceptada;
             conexiones.push(conexion);
         }
 

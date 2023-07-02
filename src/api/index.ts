@@ -1,16 +1,14 @@
-import { IDBServiceFactory } from '../core/patterns/factory/idb-service-factory';
-import { UsuarioFiltro } from '../core/dtos/usuario-filtro';
-import { IUsuariosService } from '../core/services/iusuarios-service';
-import { UsuariosService } from '../data-pg/services/usuarios-service';
-import app from './server';
+import { buildApp } from './server';
 import dotenv from 'dotenv';
-import { DBServiceFactory } from '../data-pg/patterns/factory/db-service-factory';
+import express from 'express';
 
 dotenv.config();
 
 const hostname = process.env.API_HOSTNAME || 'localhost';
 const port = Number(process.env.API_PORT || 3000);
+const corsOrigin = process.env.API_CORS_ORIGIN || 'http://localhost:4200';
 
+const app: express.Express = buildApp(corsOrigin);
 app.listen(port, hostname, () => {
     console.log(`Server running at http://${hostname}:${port}/`);
 });
