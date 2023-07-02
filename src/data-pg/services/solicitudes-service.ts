@@ -33,7 +33,7 @@ export class SolicitudesService implements ISolicitudesService {
         this._queryBuilder = new PGQueryBuilder();
     }
 
-    public async getSolicitudesRelevantes(id: number, count: number): Promise<SolicitudRelevanteDTO[]> {
+    public async getSolicitudesRelevantes(id: number, count: number): Promise<SolicitudRelevanteDTO[]> { 
             let query = this._queryBuilder.select(Solicitud, ['id', 'localizacion', 'fecha_creacion', 'id_creador', 'id_acepta', 'titulo', 'descripcion', 'opinion_creador', 'opinion_acepta', 'estado', 'cerrado_creador', 'cerrado_acepta']);
             query = query.join(Usuario, 'C', equal(prop('Solicitud', 'id_creador'), prop('C', 'id')), ['nombres', 'apellidos']);
             query = query.join(SolicitudHabilidad, 'SH', equal(prop('Solicitud', 'id'), prop('SH', 'id_solicitud')), ['codigo_habilidad']);
