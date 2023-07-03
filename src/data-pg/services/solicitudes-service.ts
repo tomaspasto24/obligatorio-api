@@ -329,8 +329,6 @@ export class SolicitudesService implements ISolicitudesService {
 
         // Reglas de negocio
         let solicitud = result.rows[0];
-        if (solicitud.solicitud_estado != EstadoSolicitud.Activa)
-            throw new Error("La solicitud no se encuentra activa");
         if (solicitud.solicitud_id_creador != activeUserId && solicitud.solicitud_id_acepta != activeUserId)
             throw new Error("El usuario no tiene permisos para acceder a la solicitud");
         

@@ -40,8 +40,8 @@ export class UsuariosService implements IUsuariosService {
                 ));
         if (filter.fullName) stack.push(
             or(
-                like(prop('Usuario', 'nombres', '%{0}%'), cons(filter.fullName)),
-                like(prop('Usuario', 'apellidos', '%{0}%'), cons(filter.fullName))
+                like(prop('Usuario', 'nombres'), cons(`%${filter.fullName}%`)),
+                like(prop('Usuario', 'apellidos'), cons(`%${filter.fullName}%`))
                 ));
         if (filter.nick) stack.push(
             like(
@@ -265,7 +265,7 @@ export class UsuariosService implements IUsuariosService {
             conexion.nick = response.rows[i].usuarioconectadousuario_id_usuario1 == id ? response.rows[i].u2_nick : response.rows[i].u1_nick;
             conexion.name = response.rows[i].usuarioconectadousuario_id_usuario1 == id ? response.rows[i].u2_nombres : response.rows[i].u1_nombres;
             conexion.lastName = response.rows[i].usuarioconectadousuario_id_usuario1 == id ? response.rows[i].u2_apellidos : response.rows[i].u1_apellidos;
-            conexion.aceptada = response.rows[i].usuarioconectadousuario_id_aceptada;
+            conexion.aceptada = response.rows[i].usuarioconectadousuario_aceptada;
             conexiones.push(conexion);
         }
 

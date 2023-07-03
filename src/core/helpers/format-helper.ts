@@ -9,7 +9,7 @@ export class FormatHelper {
                     result.push(args[index]);
                 }
                 else {
-                    result.push(`"${bit}"`);
+                    result.push(`'${bit}'`);
                 }
             }
             return result.join(' + ');
