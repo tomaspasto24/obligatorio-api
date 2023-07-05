@@ -87,7 +87,7 @@ export class SolicitudesService implements ISolicitudesService {
 
         let exp: Expression = or(equal(prop('Solicitud', 'cerrado_creador'), cons(false)), equal(prop('Solicitud', 'cerrado_acepta'), cons(false)));
         exp = and(exp, in_(prop('Solicitud', 'estado'), cons([EstadoSolicitud.Solucionado, EstadoSolicitud.Cancelado])));
-        exp = or(exp, equal(prop('Solicitud', 'estado'), cons(EstadoSolicitud.Activa)));
+        exp = or(exp, in_(prop('Solicitud', 'estado'), cons([EstadoSolicitud.Activa, EstadoSolicitud.Abierta])));
         let exp2: Expression = and(equal(prop('Solicitud', 'id_creador'), cons(id)), equal(prop('Solicitud', 'cerrado_creador'), cons(false)));
         exp2 = or(exp2, and(equal(prop('Solicitud', 'id_acepta'), cons(id)), equal(prop('Solicitud', 'cerrado_acepta'), cons(false))));
         exp = and(exp, exp2);
@@ -277,8 +277,6 @@ export class SolicitudesService implements ISolicitudesService {
             throw new Error("No se pudo actualizar la solicitud");
             
         let solicitud = response.rows[0];
-        if ((solicitud.solicitud_cerrado_acepta || solicitud.solicitud_id_acepta !== null ) && solicitud.solicitud_cerrado_creador)
-            throw new Error("No se pudo actualizar la solicitud");
         
         let suffix: string = "";
         let estado: EstadoSolicitud = EstadoSolicitud.Activa;

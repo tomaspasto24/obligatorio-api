@@ -21,7 +21,7 @@ export const documentation = {
     },
     servers: [
         {
-            url: `http://${host}:${port}/api`,
+            url: `http://${host}:${port}`,
             description: 'Local server',
         },
     ],
